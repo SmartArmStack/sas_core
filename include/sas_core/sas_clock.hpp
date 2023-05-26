@@ -43,11 +43,12 @@ public:
     };
 private:
 
-    std::chrono::system_clock::time_point time_initial_;
-    std::chrono::system_clock::time_point next_loop_deadline_;
+    // https://stackoverflow.com/questions/65397041/apple-clang-why-can-i-not-create-a-time-point-from-stdchrononanoseconds
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time_initial_;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> next_loop_deadline_;
 
-    std::chrono::system_clock::time_point time_before_sleep_;
-    std::chrono::system_clock::time_point time_after_sleep_;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time_before_sleep_;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time_after_sleep_;
 
     const std::chrono::nanoseconds target_sampling_time_;
 
@@ -75,8 +76,8 @@ public:
     void update_and_sleep();
     double get_elapsed_time_sec() const;
 
-    std::chrono::system_clock::time_point get_initial_time() const;
-    std::chrono::system_clock::time_point get_last_update_time() const;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> get_initial_time() const;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> get_last_update_time() const;
 
     void safe_sleep_seconds(const double& seconds, std::atomic_bool* break_loop);
     void blocking_sleep_seconds(const double& seconds);

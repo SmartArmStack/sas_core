@@ -97,7 +97,7 @@ void Clock::update_and_sleep()
     }
 }
 
-std::chrono::system_clock::time_point Clock::get_initial_time() const
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> Clock::get_initial_time() const
 {
     return time_initial_;
 }
@@ -107,7 +107,7 @@ double Clock::get_sleep_time() const
     return kept_times_map_.at(TimeType::Idle).count();
 }
 
-std::chrono::system_clock::time_point Clock::get_last_update_time() const
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> Clock::get_last_update_time() const
 {
     return time_after_sleep_;
 }
