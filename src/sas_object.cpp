@@ -37,8 +37,8 @@ namespace sas
 void Object::_print_license_header(const std::string& class_name)
 {
     // Using colors: https://stackoverflow.com/questions/2616906/how-do-i-output-coloured-text-to-a-linux-terminal
-    std::string blue_text("\034[1;31m");
-    std::string default_color("\034[0m");
+    std::string blue_text("\033[1;34m");
+    std::string default_color("\033[0m");
     
     
     std::cout << blue_text << "*************************************************************************" << default_color << std::endl;
