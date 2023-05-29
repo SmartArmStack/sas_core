@@ -36,9 +36,14 @@ namespace sas
  */
 void Object::_print_license_header(const std::string& class_name)
 {
-    std::cout << "************************************************************************" << std::endl;
-    std::cout << class_name + "(c) Murilo M. Marinho (murilomarinho.info) 2016-2023 LGPLv3" << std::endl;
-    std::cout << "************************************************************************" << std::endl;
+    // Using colors: https://stackoverflow.com/questions/2616906/how-do-i-output-coloured-text-to-a-linux-terminal
+    std::string blue_text("\033[1;31m");
+    std::string default_color("\033[0m\n");
+    
+    
+    std::cout << blue_text << "*************************************************************************" << default_color << std::endl;
+    std::cout << blue_text << class_name + " (c) Murilo M. Marinho (murilomarinho.info) 2016-2023 LGPLv3" << default_color << std::endl;
+    std::cout << blue_text << "*************************************************************************" << default_color << std::endl;
 }
 
 Object::Object(const std::string &class_name):
