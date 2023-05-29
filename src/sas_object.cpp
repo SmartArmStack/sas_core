@@ -41,11 +41,11 @@ void Object::_print_license_header(const std::string& class_name)
     std::string default_color("\033[0m");
     
     
-    std::cout << blue_text << std::string('*',class_name.size()) 
+    std::cout << blue_text << std::string(class_name.size(),'*') 
         << "****************************************************************" << default_color << std::endl;
     std::cout << blue_text << class_name 
         + " (c) Murilo M. Marinho (murilomarinho.info) 2016-2023 LGPLv3" << default_color << std::endl;
-    std::cout << blue_text << std::string('*',class_name.size()) 
+    std::cout << blue_text << std::string(class_name.size(),'*') 
         << "****************************************************************" << default_color << std::endl;
 }
 
