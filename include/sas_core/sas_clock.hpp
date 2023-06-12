@@ -53,10 +53,6 @@ private:
     const std::chrono::nanoseconds target_sampling_time_;
 
     std::map<TimeType,std::chrono::nanoseconds> kept_times_map_;
-    //Formely
-    //std::chrono::nanoseconds loop_duration_;
-    //std::chrono::nanoseconds computation_duration_;
-    //std::chrono::nanoseconds sleep_duration_;
 
     long overrun_sampling_time_count_;
 
@@ -82,16 +78,19 @@ public:
     void safe_sleep_seconds(const double& seconds, std::atomic_bool* break_loop);
     void blocking_sleep_seconds(const double& seconds);
 
-    double get_computation_time() const;
-    double get_sleep_time() const;
-    double get_effective_thread_sampling_time_sec() const;
-
     double get_desired_thread_sampling_time_sec() const;
-
     long get_overrun_count() const;
 
     double get_time(const TimeType& time_type) const;
     double get_statistics(const Statistics &statistics, const TimeType &time_type) const;
+
+    ///Deprecated
+    [[deprecated("Use get_time(sas::Clock::Computational) instead.")]]
+    double get_computation_time() const;
+    [[deprecated("Use get_time(sas::Clock::Idle) instead.")]]
+    double get_sleep_time() const;
+    [[deprecated("Use get_time(sas::Clock::EffectiveSampling) instead.")]]
+    double get_effective_thread_sampling_time_sec() const;
 };
 
 }
