@@ -42,6 +42,7 @@ PYBIND11_MODULE(_sas_core, m) {
     clock.def("init",&C::init,"Initialize clock.");
     clock.def("update_and_sleep",&C::update_and_sleep,"Sleeps only the time necessary to keep the desired rate.");
     clock.def("get_elapsed_time_sec",&C::get_elapsed_time_sec,"Gets the elapsed time in seconds.");
+    clock.def("get_desired_thread_sampling_time_sec",&C::get_desired_thread_sampling_time_sec,"Gets the desired sampling time in seconds.");
 
     ///std::chrono time points, not sure what to do with/about these
     //std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> get_initial_time() const;
@@ -50,7 +51,7 @@ PYBIND11_MODULE(_sas_core, m) {
     clock.def("safe_sleep_seconds",&C::safe_sleep_seconds);
     clock.def("blocking_sleep_seconds",&C::blocking_sleep_seconds);
 
-    ///OLD API
+    ///OLD API, no need to expose it
     //double get_computation_time() const;
     //double get_sleep_time() const;
     //double get_effective_thread_sampling_time_sec() const;
