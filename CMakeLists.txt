@@ -6,6 +6,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
+find_package(pybind11 REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 
@@ -33,6 +34,7 @@ ament_export_dependencies(Eigen3)
 
 target_link_libraries(${PROJECT_NAME}
     -ldqrobotics
+    Eigen3::Eigen
     )
 
 install(
@@ -96,6 +98,29 @@ install(TARGETS
     DESTINATION lib/${PROJECT_NAME})
 
 ##END## CPP BINARY #####
+
+##### PYBIND11 LIBRARY #####
+
+ament_python_install_package(${PROJECT_NAME})
+
+pybind11_add_module(_${PROJECT_NAME} SHARED
+    src/sas_core_py.cpp
+    )
+
+target_include_directories(_${PROJECT_NAME}
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
+
+target_compile_definitions(_${PROJECT_NAME} PRIVATE IS_SAS_PYTHON_BUILD)
+# https://github.com/pybind/pybind11/issues/387
+target_link_libraries(_${PROJECT_NAME} PRIVATE ${PROJECT_NAME} -ldqrobotics)
+
+install(TARGETS _${PROJECT_NAME}
+  DESTINATION "${PYTHON_INSTALL_DIR}/${PROJECT_NAME}"
+)
+
+##END## PYBIND11 LIBRARY #####
 
 
 if(BUILD_TESTING)
