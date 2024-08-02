@@ -32,7 +32,7 @@ RobotDriver::RobotDriver(std::atomic_bool *break_loops):
 
 }
 
-std::tuple<VectorXd, VectorXd> RobotDriver::get_joint_limits() const
+std::tuple<VectorXd, VectorXd> RobotDriver::get_joint_limits()
 {
     return joint_limits_;
 }
