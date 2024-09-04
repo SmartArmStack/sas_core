@@ -32,6 +32,26 @@ RobotDriver::RobotDriver(std::atomic_bool *break_loops):
 
 }
 
+VectorXd RobotDriver::get_joint_velocities()
+{
+    throw std::runtime_error("Not implemented yet.");
+}
+
+void RobotDriver::set_target_joint_velocities(const VectorXd&)
+{
+    throw std::runtime_error("Not implemented yet.");
+}
+
+VectorXd RobotDriver::get_joint_torques()
+{
+    throw std::runtime_error("Not implemented yet.");
+}
+
+void RobotDriver::set_target_joint_torques(const VectorXd &)
+{
+    throw std::runtime_error("Not implemented yet.");
+}
+
 std::tuple<VectorXd, VectorXd> RobotDriver::get_joint_limits()
 {
     return joint_limits_;

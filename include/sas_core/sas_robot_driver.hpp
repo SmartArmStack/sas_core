@@ -36,6 +36,8 @@ class RobotDriver
 protected:
     std::atomic_bool* break_loops_;
     std::tuple<VectorXd, VectorXd> joint_limits_;
+    VectorXd joint_velocities_;
+    VectorXd joint_torques_;
 
     RobotDriver(std::atomic_bool* break_loops);
 
@@ -53,6 +55,13 @@ public:
 
     virtual VectorXd get_joint_positions() = 0;
     virtual void set_target_joint_positions(const VectorXd& set_target_joint_positions_rad) = 0;
+
+    virtual VectorXd get_joint_velocities();
+    virtual void set_target_joint_velocities(const VectorXd& set_target_joint_velocities);
+
+    virtual VectorXd get_joint_torques();
+    virtual void set_target_joint_torques(const VectorXd& set_target_joint_torques);
+
     virtual std::tuple<VectorXd, VectorXd> get_joint_limits();
     virtual void set_joint_limits(const std::tuple<VectorXd, VectorXd>& joint_limits);
 
