@@ -22,6 +22,7 @@
 #
 # ################################################################*/
 #include <sas_core/sas_robot_driver.hpp>
+#include <sas_core/sas_clock.hpp>
 
 namespace sas
 {
@@ -61,5 +62,30 @@ void RobotDriver::set_joint_limits(const std::tuple<VectorXd, VectorXd> &joint_l
 {
     joint_limits_ = joint_limits;
 }
+
+//void RobotDriver::_watchdog_thread_function()
+//{
+// while(not *break_loops)
+//{
+// check last_trigger_
+// compare with current clock time
+// throw exception if larger than allowed sampling time
+// check difference in the past and future for the timestamp
+//
+//}
+//}
+
+void RobotDriver::watchdog_start(const std::chrono::nanoseconds& period)
+{
+    //Start the thread in the correct period
+    //The thread's method must be another method that manages the watchdog triggers
+    
+}
+
+void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger)
+{
+    last_trigger_ = trigger;
+}
+
 
 }
