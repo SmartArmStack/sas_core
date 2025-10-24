@@ -43,7 +43,7 @@ protected:
     VectorXd joint_torques_;
 
     std::unique_ptr<std::thread> watchdog_thread_;
-    std::chrono::time_point last_trigger_;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_;
 
     RobotDriver(std::atomic_bool* break_loops);
 
@@ -71,8 +71,8 @@ public:
     virtual std::tuple<VectorXd, VectorXd> get_joint_limits();
     virtual void set_joint_limits(const std::tuple<VectorXd, VectorXd>& joint_limits);
 
-    void watchdog_start(const std::chrono::duration& period);
-    void watchdog_trigger(const std::chrono::time_point& trigger);
+    void watchdog_start(const std::chrono::nanoseconds& period);
+    void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger);
 
     virtual void connect()=0;
     virtual void disconnect()=0;
