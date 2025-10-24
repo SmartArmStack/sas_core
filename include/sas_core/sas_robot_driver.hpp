@@ -24,6 +24,9 @@
 # ################################################################*/
 
 #include <atomic>
+#include <thread>
+#include <memory>
+#include <chrono>
 
 #include <eigen3/Eigen/Dense>
 
@@ -38,6 +41,9 @@ protected:
     std::tuple<VectorXd, VectorXd> joint_limits_;
     VectorXd joint_velocities_;
     VectorXd joint_torques_;
+
+    std::unique_ptr<std::thread> watchdog_thread_;
+    std::chrono::time_point last_trigger_;
 
     RobotDriver(std::atomic_bool* break_loops);
 
@@ -64,6 +70,9 @@ public:
 
     virtual std::tuple<VectorXd, VectorXd> get_joint_limits();
     virtual void set_joint_limits(const std::tuple<VectorXd, VectorXd>& joint_limits);
+
+    void watchdog_start();
+    void watchdog_trigger(const std::chrono::time_point& trigger);
 
     virtual void connect()=0;
     virtual void disconnect()=0;
