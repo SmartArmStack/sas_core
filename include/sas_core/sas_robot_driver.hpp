@@ -71,7 +71,7 @@ public:
     virtual std::tuple<VectorXd, VectorXd> get_joint_limits();
     virtual void set_joint_limits(const std::tuple<VectorXd, VectorXd>& joint_limits);
 
-    void watchdog_start();
+    void watchdog_start(const std::chrono::duration& period);
     void watchdog_trigger(const std::chrono::time_point& trigger);
 
     virtual void connect()=0;
