@@ -118,6 +118,10 @@ void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::sy
     last_trigger_ = trigger;
 }
 
+/**
+ * @brief RobotDriver::watchdog_status updates the watchdog status.
+ * @param The desired status. If false, the driver is going to stop.
+ */
 void RobotDriver::watchdog_status(const bool &status)
 {
     watchdog_status_ = status;
