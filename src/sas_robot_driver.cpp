@@ -1,5 +1,5 @@
 /*
-# Copyright (c) 2016-2020 Murilo Marques Marinho
+# Copyright (c) 2016-2025 Murilo Marques Marinho
 #
 #    This file is part of sas_robot_driver.
 #
@@ -22,6 +22,7 @@
 #
 # ################################################################*/
 #include <sas_core/sas_robot_driver.hpp>
+#include <sas_core/sas_clock.hpp>
 
 namespace sas
 {
@@ -61,5 +62,43 @@ void RobotDriver::set_joint_limits(const std::tuple<VectorXd, VectorXd> &joint_l
 {
     joint_limits_ = joint_limits;
 }
+
+/**
+ * @brief RobotDriver::_watchdog_thread_function throws an exception if the elapsed time since the last trigger
+ *        exceeds the specified period.
+ */
+void RobotDriver::_watchdog_thread_function()
+{
+    const double& period =  clock_->get_desired_thread_sampling_time_sec();
+    clock_->init();
+    while(!(*break_loops_))
+    {
+        std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
+        double elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_).count();
+        if (elapsed_time > period)
+            throw std::runtime_error("RobotDriver:: The heartbeat signal was lost!");
+        clock_->update_and_sleep();
+    }
+}
+
+/**
+ * @brief RobotDriver::watchdog_start starts the watchdog thread
+ * @param period The period of time.
+ */
+void RobotDriver::watchdog_start(const std::chrono::nanoseconds& period)
+{
+    if (!clock_)
+        clock_ = std::make_unique<sas::Clock>(std::chrono::duration_cast<std::chrono::duration<double>>(period).count());
+
+    if (!watchdog_thread_)
+        watchdog_thread_ = std::make_unique<std::thread>(&RobotDriver::_watchdog_thread_function, this);
+
+}
+
+void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger)
+{
+    last_trigger_ = trigger;
+}
+
 
 }

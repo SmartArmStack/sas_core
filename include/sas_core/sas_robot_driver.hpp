@@ -1,6 +1,6 @@
 ﻿#pragma once
 /*
-# Copyright (c) 2016-2020 Murilo Marques Marinho
+# Copyright (c) 2016-2025 Murilo Marques Marinho
 #
 #    This file is part of sas_robot_driver.
 #
@@ -21,10 +21,19 @@
 #
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
-# ################################################################*/
+# ################################################################
+# Contributors:
+#
+#   1. Juan Jose Quiroz Omana (juanjose.quirozomana@manchester.ac.uk)
+#      Added the Watchdog functionaly initially proposed in
+#      https://github.com/SmartArmStack/sas_core/pull/1
+*/
 
 #include <atomic>
-
+#include <thread>
+#include <memory>
+#include <chrono>
+#include <sas_core/sas_clock.hpp>
 #include <eigen3/Eigen/Dense>
 
 using namespace Eigen;
@@ -38,6 +47,11 @@ protected:
     std::tuple<VectorXd, VectorXd> joint_limits_;
     VectorXd joint_velocities_;
     VectorXd joint_torques_;
+
+    std::unique_ptr<sas::Clock> clock_;
+    std::unique_ptr<std::thread> watchdog_thread_;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_;
+    void _watchdog_thread_function();
 
     RobotDriver(std::atomic_bool* break_loops);
 
@@ -64,6 +78,9 @@ public:
 
     virtual std::tuple<VectorXd, VectorXd> get_joint_limits();
     virtual void set_joint_limits(const std::tuple<VectorXd, VectorXd>& joint_limits);
+
+    void watchdog_start(const std::chrono::nanoseconds& period);
+    void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger);
 
     virtual void connect()=0;
     virtual void disconnect()=0;
