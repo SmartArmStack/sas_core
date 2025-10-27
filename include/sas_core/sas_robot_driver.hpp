@@ -64,7 +64,8 @@ public:
         VelocityControl,
         ForceControl,
         Homing,
-        ClearPositions
+        ClearPositions,
+        Watchdog
     };
 
     virtual VectorXd get_joint_positions() = 0;
