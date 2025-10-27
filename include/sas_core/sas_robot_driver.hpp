@@ -51,6 +51,7 @@ protected:
     std::unique_ptr<sas::Clock> clock_;
     std::unique_ptr<std::thread> watchdog_thread_;
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_;
+    bool watchdog_status_{true};
     void _watchdog_thread_function();
 
     RobotDriver(std::atomic_bool* break_loops);
@@ -82,6 +83,7 @@ public:
 
     void watchdog_start(const std::chrono::nanoseconds& period);
     void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger);
+    void watchdog_status(const bool& status);
 
     virtual void connect()=0;
     virtual void disconnect()=0;
