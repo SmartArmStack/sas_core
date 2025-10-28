@@ -111,19 +111,13 @@ void RobotDriver::watchdog_start(const std::chrono::nanoseconds& period)
 
 /**
  * @brief RobotDriver::watchdog_trigger updates the trigger signal.
- * @param trigger
+ * @param trigger The time_point
+ * @param status. The desired status. If false, the driver is going to stop.
  */
-void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger)
+void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger,
+                                   const bool &status)
 {
-    last_trigger_ = trigger;
-}
-
-/**
- * @brief RobotDriver::watchdog_status updates the watchdog status.
- * @param The desired status. If false, the driver is going to stop.
- */
-void RobotDriver::watchdog_status(const bool &status)
-{
+    last_trigger_    = trigger;
     watchdog_status_ = status;
 }
 
