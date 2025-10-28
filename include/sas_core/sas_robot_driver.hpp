@@ -54,7 +54,7 @@ protected:
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_;
     bool watchdog_status_;
     void _watchdog_thread_function();
-    std::mutex mutex_last_trigger_;
+    std::mutex mutex_watchdog_;
 
     RobotDriver(std::atomic_bool* break_loops);
 

@@ -85,7 +85,7 @@ void RobotDriver::_watchdog_thread_function()
         double elapsed_time;
         bool wstatus;
         {
-            std::scoped_lock lock(mutex_last_trigger_);
+            std::scoped_lock lock(mutex_watchdog_);
             elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_).count();
             wstatus = watchdog_status_;
         }
@@ -124,7 +124,7 @@ void RobotDriver::watchdog_start(const std::chrono::nanoseconds& period)
 void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger,
                                    const bool &status)
 {
-    std::scoped_lock lock(mutex_last_trigger_);
+    std::scoped_lock lock(mutex_watchdog_);
     last_trigger_    = trigger;
     watchdog_status_ = status;
 }
