@@ -51,6 +51,7 @@ protected:
     std::unique_ptr<sas::Clock> clock_;
     std::unique_ptr<std::thread> watchdog_thread_;
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_;
+    bool watchdog_status_;
     void _watchdog_thread_function();
 
     RobotDriver(std::atomic_bool* break_loops);
@@ -64,7 +65,8 @@ public:
         VelocityControl,
         ForceControl,
         Homing,
-        ClearPositions
+        ClearPositions,
+        Watchdog
     };
 
     virtual VectorXd get_joint_positions() = 0;
@@ -80,7 +82,8 @@ public:
     virtual void set_joint_limits(const std::tuple<VectorXd, VectorXd>& joint_limits);
 
     void watchdog_start(const std::chrono::nanoseconds& period);
-    void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger);
+    void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger,
+                          const bool& status);
 
     virtual void connect()=0;
     virtual void disconnect()=0;

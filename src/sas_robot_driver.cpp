@@ -20,7 +20,14 @@
 #
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
-# ################################################################*/
+# ################################################################# Contributors:
+#
+#   1. Juan Jose Quiroz Omana (juanjose.quirozomana@manchester.ac.uk)
+#      Added the Watchdog functionality initially proposed in
+#      https://github.com/SmartArmStack/sas_core/pull/1
+*/
+
+
 #include <sas_core/sas_robot_driver.hpp>
 #include <sas_core/sas_clock.hpp>
 
@@ -76,7 +83,14 @@ void RobotDriver::_watchdog_thread_function()
         std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
         double elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_).count();
         if (elapsed_time > period)
-            throw std::runtime_error("RobotDriver:: The heartbeat signal was lost!");
+            throw std::runtime_error(
+                std::string("RobotDriver:: The watchdog signal was lost! ") +
+                "The elapsed time was " + std::to_string(elapsed_time) +
+                " but the period is: " + std::to_string(period)
+                );
+
+        if(!watchdog_status_)
+            throw std::runtime_error("RobotDriver:: The watchdog status is false!");
         clock_->update_and_sleep();
     }
 }
@@ -95,9 +109,16 @@ void RobotDriver::watchdog_start(const std::chrono::nanoseconds& period)
 
 }
 
-void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger)
+/**
+ * @brief RobotDriver::watchdog_trigger updates the trigger signal.
+ * @param trigger The time_point
+ * @param status. The desired status. If false, the driver is going to stop.
+ */
+void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger,
+                                   const bool &status)
 {
-    last_trigger_ = trigger;
+    last_trigger_    = trigger;
+    watchdog_status_ = status;
 }
 
 
