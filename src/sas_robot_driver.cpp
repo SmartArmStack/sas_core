@@ -71,6 +71,17 @@ void RobotDriver::set_joint_limits(const std::tuple<VectorXd, VectorXd> &joint_l
 }
 
 /**
+ * @brief RobotDriver::_get_last_trigger returns the last trigger using a thread-safe approach
+ * @return the last trigger
+ */
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> RobotDriver::_get_last_trigger() const
+{
+    std::scoped_lock lock(mutex_last_trigger_); // Locks acquired
+    return last_trigger_;
+}
+
+
+/**
  * @brief RobotDriver::_watchdog_thread_function throws an exception if the elapsed time since the last trigger
  *        exceeds the specified period.
  */
@@ -81,7 +92,7 @@ void RobotDriver::_watchdog_thread_function()
     while(!(*break_loops_))
     {
         std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
-        double elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_).count();
+        double elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - _get_last_trigger()).count();
         if (elapsed_time > period)
             throw std::runtime_error(
                 std::string("RobotDriver:: The watchdog signal was lost! ") +
