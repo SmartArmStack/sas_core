@@ -70,6 +70,7 @@ void RobotDriver::set_joint_limits(const std::tuple<VectorXd, VectorXd> &joint_l
     joint_limits_ = joint_limits;
 }
 
+
 /**
  * @brief RobotDriver::_watchdog_thread_function throws an exception if the elapsed time since the last trigger
  *        exceeds the specified period.
@@ -81,7 +82,13 @@ void RobotDriver::_watchdog_thread_function()
     while(!(*break_loops_))
     {
         std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
-        double elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_).count();
+        double elapsed_time;
+        bool wstatus;
+        {
+            std::scoped_lock lock(mutex_watchdog_);
+            elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_).count();
+            wstatus = watchdog_status_;
+        }
         if (elapsed_time > period)
             throw std::runtime_error(
                 std::string("RobotDriver:: The watchdog signal was lost! ") +
@@ -89,7 +96,7 @@ void RobotDriver::_watchdog_thread_function()
                 " but the period is: " + std::to_string(period)
                 );
 
-        if(!watchdog_status_)
+        if(!wstatus)
             throw std::runtime_error("RobotDriver:: The watchdog status is false!");
         clock_->update_and_sleep();
     }
@@ -117,6 +124,7 @@ void RobotDriver::watchdog_start(const std::chrono::nanoseconds& period)
 void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger,
                                    const bool &status)
 {
+    std::scoped_lock lock(mutex_watchdog_);
     last_trigger_    = trigger;
     watchdog_status_ = status;
 }
