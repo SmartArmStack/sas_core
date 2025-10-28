@@ -74,7 +74,7 @@ void RobotDriver::set_joint_limits(const std::tuple<VectorXd, VectorXd> &joint_l
  * @brief RobotDriver::_get_last_trigger returns the last trigger using a thread-safe approach
  * @return the last trigger
  */
-std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> RobotDriver::_get_last_trigger() const
+std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> RobotDriver::_get_last_trigger()
 {
     std::scoped_lock lock(mutex_last_trigger_); // Locks acquired
     return last_trigger_;

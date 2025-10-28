@@ -52,7 +52,7 @@ protected:
     std::unique_ptr<sas::Clock> clock_;
     std::unique_ptr<std::thread> watchdog_thread_;
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_;
-    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> _get_last_trigger() const ;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> _get_last_trigger();
     bool watchdog_status_;
     void _watchdog_thread_function();
     std::mutex mutex_last_trigger_;
