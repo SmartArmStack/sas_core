@@ -54,7 +54,6 @@ protected:
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_from_the_client_;
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_when_received_;
     bool watchdog_status_;
-    bool watchdog_signal_synchronized_;
     void _watchdog_thread_function();
     std::mutex mutex_watchdog_;
     double max_acceptable_delay_ = 0.1;

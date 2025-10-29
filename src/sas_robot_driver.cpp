@@ -35,7 +35,7 @@ namespace sas
 {
 
 RobotDriver::RobotDriver(std::atomic_bool *break_loops):
-    break_loops_(break_loops), watchdog_signal_synchronized_{true}
+    break_loops_(break_loops)
 {
 
 }
