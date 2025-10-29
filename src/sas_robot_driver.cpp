@@ -93,7 +93,7 @@ void RobotDriver::_watchdog_thread_function()
         }
 
         double clock_difference = std::abs(elapsed_time - elapsed_time_same_clock);
-        if (clock_difference > max_acceptable_skew_)
+        if (clock_difference > max_acceptable_delay_)
             throw std::runtime_error(
                 std::string("RobotDriver:: The watchdog signal is delayed, or the clocks between the client and server are out of synch! ") +
                 "Watchdog signal delay: " + std::to_string(1000*clock_difference) +"ms."
@@ -154,9 +154,9 @@ void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::sy
  *                          the time point when the watchdog signal was received.
  * @param max_acceptable_delay
  */
-void RobotDriver::watchdog_set_maximum_acceptable_delay(const double &max_acceptable_skew)
+void RobotDriver::watchdog_set_maximum_acceptable_delay(const double &max_acceptable_delay)
 {
-    max_acceptable_skew_ = max_acceptable_skew;
+    max_acceptable_delay_ = max_acceptable_delay;
 }
 
 
