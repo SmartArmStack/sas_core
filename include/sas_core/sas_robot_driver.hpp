@@ -51,10 +51,13 @@ protected:
 
     std::unique_ptr<sas::Clock> clock_;
     std::unique_ptr<std::thread> watchdog_thread_;
-    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_from_the_client_;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_when_received_;
     bool watchdog_status_;
+    bool watchdog_signal_synchronized_;
     void _watchdog_thread_function();
     std::mutex mutex_watchdog_;
+    double max_acceptable_skew_ = 0.1;
 
     RobotDriver(std::atomic_bool* break_loops);
 
@@ -84,8 +87,11 @@ public:
     virtual void set_joint_limits(const std::tuple<VectorXd, VectorXd>& joint_limits);
 
     void watchdog_start(const std::chrono::nanoseconds& period);
-    void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger,
+    void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_client,
+                          const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_when_received,
                           const bool& status);
+    void watchdog_set_maximum_acceptable_skew(const double& max_acceptable_skew);
+    bool watchdog_signal_synchronized() const;
 
     virtual void connect()=0;
     virtual void disconnect()=0;

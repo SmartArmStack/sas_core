@@ -35,7 +35,7 @@ namespace sas
 {
 
 RobotDriver::RobotDriver(std::atomic_bool *break_loops):
-    break_loops_(break_loops)
+    break_loops_(break_loops), watchdog_signal_synchronized_{true}
 {
 
 }
@@ -83,17 +83,27 @@ void RobotDriver::_watchdog_thread_function()
     {
         std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
         double elapsed_time;
+        double elapsed_time_same_clock;
         bool wstatus;
         {
             std::scoped_lock lock(mutex_watchdog_);
-            elapsed_time = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_).count();
+            elapsed_time            = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_from_the_client_).count();
+            elapsed_time_same_clock = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_when_received_).count();
             wstatus = watchdog_status_;
         }
-        if (elapsed_time > period)
+
+        double clock_difference = std::abs(elapsed_time - elapsed_time_same_clock);
+        if (clock_difference > max_acceptable_skew_)
+            watchdog_signal_synchronized_ = false;
+
+
+
+        if (elapsed_time_same_clock  > period)
             throw std::runtime_error(
                 std::string("RobotDriver:: The watchdog signal was lost! ") +
-                "The elapsed time was " + std::to_string(elapsed_time) +
-                " but the period is: " + std::to_string(period)
+                "The elapsed time was " + std::to_string(elapsed_time_same_clock) +
+                " seconds, but the period is " + std::to_string(period) + ". There was a watchdog signal delay of " + std::to_string(1000*clock_difference) +
+                "ms."
                 );
 
         if(!wstatus)
@@ -116,17 +126,44 @@ void RobotDriver::watchdog_start(const std::chrono::nanoseconds& period)
 
 }
 
+
 /**
  * @brief RobotDriver::watchdog_trigger updates the trigger signal.
- * @param trigger The time_point
- * @param status. The desired status. If false, the driver is going to stop.
+ * @param time_point_from_the_client This time point corresponds to the moment the signal was sent, as recorded by the client computer's clock.
+ * @param time_point_when_received The time point when the watchdog signal was received. This time point uses
+ *                                 the computer's clock on which the server (robot) is running.
+ * @param status The desired status. If false, the driver is going to stop.
  */
-void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& trigger,
-                                   const bool &status)
+void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_client,
+                                   const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_when_received,
+                                   const bool& status)
 {
     std::scoped_lock lock(mutex_watchdog_);
-    last_trigger_    = trigger;
+    last_trigger_from_the_client_    = time_point_from_the_client;
+    last_trigger_when_received_      = time_point_when_received;
     watchdog_status_ = status;
+}
+
+
+/**
+ * @brief RobotDriver::watchdog_set_maximum_acceptable_skew sets the maximum acceptable clock skew to check the synchronization or
+ *                          potential delays between the time point of watchdog signal sent by the client and
+ *                          the time point when the watchdog signal was received.
+ * @param max_acceptable_skew
+ */
+void RobotDriver::watchdog_set_maximum_acceptable_skew(const double &max_acceptable_skew)
+{
+    max_acceptable_skew_ = max_acceptable_skew;
+}
+
+/**
+ * @brief RobotDriver::is_watchdog_signal_synchronized returns true if the time skew between the time point sent by the
+ *                      client and the time point when the server received the signal is higher than a threshold. False otherwise.
+ * @return The synchronization flag.
+ */
+bool RobotDriver::watchdog_signal_synchronized() const
+{
+    return watchdog_signal_synchronized_;
 }
 
 
