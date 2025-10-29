@@ -90,8 +90,8 @@ public:
     void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_client,
                           const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_when_received,
                           const bool& status);
-    void watchdog_set_maximum_acceptable_skew(const double& max_acceptable_skew);
-    bool watchdog_signal_synchronized() const;
+    void watchdog_set_maximum_acceptable_delay(const double& max_acceptable_skew);
+
 
     virtual void connect()=0;
     virtual void disconnect()=0;

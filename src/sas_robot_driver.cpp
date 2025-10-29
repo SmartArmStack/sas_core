@@ -94,7 +94,10 @@ void RobotDriver::_watchdog_thread_function()
 
         double clock_difference = std::abs(elapsed_time - elapsed_time_same_clock);
         if (clock_difference > max_acceptable_skew_)
-            watchdog_signal_synchronized_ = false;
+            throw std::runtime_error(
+                std::string("RobotDriver:: The watchdog signal is delayed, or the clocks between the client and server are out of synch! ") +
+                "Watchdog signal delay: " + std::to_string(1000*clock_difference) +"ms."
+                );
 
 
 
@@ -146,25 +149,16 @@ void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::sy
 
 
 /**
- * @brief RobotDriver::watchdog_set_maximum_acceptable_skew sets the maximum acceptable clock skew to check the synchronization or
+ * @brief RobotDriver::watchdog_set_maximum_acceptable_delay sets the maximum acceptable clock skew to check the synchronization or
  *                          potential delays between the time point of watchdog signal sent by the client and
  *                          the time point when the watchdog signal was received.
- * @param max_acceptable_skew
+ * @param max_acceptable_delay
  */
-void RobotDriver::watchdog_set_maximum_acceptable_skew(const double &max_acceptable_skew)
+void RobotDriver::watchdog_set_maximum_acceptable_delay(const double &max_acceptable_skew)
 {
     max_acceptable_skew_ = max_acceptable_skew;
 }
 
-/**
- * @brief RobotDriver::is_watchdog_signal_synchronized returns true if the time skew between the time point sent by the
- *                      client and the time point when the server received the signal is higher than a threshold. False otherwise.
- * @return The synchronization flag.
- */
-bool RobotDriver::watchdog_signal_synchronized() const
-{
-    return watchdog_signal_synchronized_;
-}
 
 
 }
