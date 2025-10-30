@@ -142,7 +142,7 @@ void RobotDriver::watchdog_start(const std::chrono::nanoseconds& period)
 
 
 /**
- * @brief RobotDriver::watchdog_trigger updates the trigger signal. This method rethrows any exception thrown in the watchdog thread control loop.
+ * @brief RobotDriver::watchdog_trigger updates the trigger signal. 
  * @param time_point_from_the_client This time point corresponds to the moment the signal was sent, as recorded by the client computer's clock.
  * @param time_point_from_the_server The time point when the watchdog signal was received. This time point uses
  *                                 the computer's clock on which the server (robot) is running.
