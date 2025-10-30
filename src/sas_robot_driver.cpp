@@ -87,8 +87,8 @@ void RobotDriver::_watchdog_thread_function()
         bool wstatus;
         {
             std::scoped_lock lock(mutex_watchdog_);
-            elapsed_time            = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_from_the_client_).count();
-            elapsed_time_same_clock = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - last_trigger_when_received_).count();
+            elapsed_time            = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - time_point_from_the_client_).count();
+            elapsed_time_same_clock = std::chrono::duration_cast<std::chrono::duration<double>>(current_time - time_point_from_the_server_).count();
             wstatus = watchdog_status_;
         }
 
@@ -133,17 +133,17 @@ void RobotDriver::watchdog_start(const std::chrono::nanoseconds& period)
 /**
  * @brief RobotDriver::watchdog_trigger updates the trigger signal.
  * @param time_point_from_the_client This time point corresponds to the moment the signal was sent, as recorded by the client computer's clock.
- * @param time_point_when_received The time point when the watchdog signal was received. This time point uses
+ * @param time_point_from_the_server The time point when the watchdog signal was received. This time point uses
  *                                 the computer's clock on which the server (robot) is running.
  * @param status The desired status. If false, the driver is going to stop.
  */
 void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_client,
-                                   const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_when_received,
+                                   const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_server,
                                    const bool& status)
 {
     std::scoped_lock lock(mutex_watchdog_);
-    last_trigger_from_the_client_    = time_point_from_the_client;
-    last_trigger_when_received_      = time_point_when_received;
+    time_point_from_the_client_    = time_point_from_the_client;
+    time_point_from_the_server_    = time_point_from_the_server;
     watchdog_status_ = status;
 }
 

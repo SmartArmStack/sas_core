@@ -51,8 +51,8 @@ protected:
 
     std::unique_ptr<sas::Clock> clock_;
     std::unique_ptr<std::thread> watchdog_thread_;
-    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_from_the_client_;
-    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> last_trigger_when_received_;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time_point_from_the_client_;
+    std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> time_point_from_the_server_;
     bool watchdog_status_;
     void _watchdog_thread_function();
     std::mutex mutex_watchdog_;
@@ -87,7 +87,7 @@ public:
 
     void watchdog_start(const std::chrono::nanoseconds& period);
     void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_client,
-                          const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_when_received,
+                          const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_server,
                           const bool& status);
     void watchdog_set_maximum_acceptable_delay(const double& max_acceptable_delay);
 
