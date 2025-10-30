@@ -57,6 +57,7 @@ protected:
     void _watchdog_thread_function();
     std::mutex mutex_watchdog_;
     double max_acceptable_delay_ = 0.1;
+    double watchdog_period_;
 
     RobotDriver(std::atomic_bool* break_loops);
 
