@@ -66,7 +66,6 @@ protected:
 
     std::exception_ptr watchdog_exception_{nullptr};
     std::mutex watchdog_exception_mutex_;
-    void _check_exception();
 public:
     enum class Functionality{
         None=0,
@@ -95,6 +94,7 @@ public:
                           const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_server,
                           const bool& status);
     void watchdog_set_maximum_acceptable_delay(const double& max_acceptable_delay);
+    void check_for_watchdog_exceptions();
 
     virtual void connect()=0;
     virtual void disconnect()=0;

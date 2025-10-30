@@ -158,7 +158,6 @@ void RobotDriver::watchdog_trigger(const std::chrono::time_point<std::chrono::sy
         time_point_from_the_server_    = time_point_from_the_server;
         watchdog_status_ = status;
     }
-    _check_exception();
 }
 
 
@@ -174,9 +173,9 @@ void RobotDriver::watchdog_set_maximum_acceptable_delay(const double &max_accept
 }
 
 /**
- * @brief RobotDriver::_check_exception this method rethrows any exception thrown in the watchdog thread control loop.
+ * @brief RobotDriver::check_for_watchdog_exceptions this method rethrows any exception thrown in the watchdog thread control loop.
  */
-void RobotDriver::_check_exception()
+void RobotDriver::check_for_watchdog_exceptions()
 {
     std::scoped_lock lock(watchdog_exception_mutex_);
     if (watchdog_exception_)
