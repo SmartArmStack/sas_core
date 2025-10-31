@@ -63,6 +63,7 @@ protected:
 
     RobotDriver()=delete;
     RobotDriver(const RobotDriver&)=delete;
+    ~RobotDriver();
 
     std::exception_ptr watchdog_exception_{nullptr};
     std::mutex watchdog_exception_mutex_;
