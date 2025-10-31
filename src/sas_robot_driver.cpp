@@ -40,6 +40,14 @@ RobotDriver::RobotDriver(std::atomic_bool *break_loops):
 
 }
 
+RobotDriver::~RobotDriver()
+{
+    if (watchdog_thread_ && watchdog_thread_->joinable()) {
+        *break_loops_ = true;  //To force the thread to shutdown if it hasn't already done so
+        watchdog_thread_->join();
+    }
+}
+
 VectorXd RobotDriver::get_joint_velocities()
 {
     throw std::runtime_error("Not implemented yet.");
