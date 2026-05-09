@@ -5,8 +5,16 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+#################################
+# pybind11 import block [BEGIN] #
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvv #
+set(PYBIND11_FINDPYTHON ON) # Fix CMP0148 Warning. https://github.com/pybind/pybind11/issues/4785
+add_subdirectory(pybind11)
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^^ #
+# pybind11 import block [END] #
+###############################
+
 # find dependencies
-find_package(pybind11 REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 
