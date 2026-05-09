@@ -1,3 +1,4 @@
+#!/bin/python3
 # Copyright (c) 2016-2023 Murilo Marques Marinho
 #
 #    This file is part of sas_core.

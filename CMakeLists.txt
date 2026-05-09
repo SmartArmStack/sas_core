@@ -130,6 +130,13 @@ install(TARGETS _${PROJECT_NAME}
 
 ##END## PYBIND11 LIBRARY #####
 
+# According to https://github.com/SmartArmStack/sas_datalogger/blob/78ac681f9cb049c5b9715d215f163565f16b5cdc/CMakeLists.txt
+##### PYTHON EXECUTABLES #####
+install(PROGRAMS
+  scripts/sas_clock_example_py.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+##END## PYTHON EXECUTABLES #####
 
 if(BUILD_TESTING)
     find_package(ament_lint_auto REQUIRED)
