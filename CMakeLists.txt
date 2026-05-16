@@ -44,9 +44,10 @@ target_include_directories(${PROJECT_NAME}
     $<INSTALL_INTERFACE:include>)
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(Eigen3)
+#ament_export_dependencies(Eigen3)
 
 target_link_libraries(${PROJECT_NAME}
+    PUBLIC
     -ldqrobotics
     Eigen3::Eigen
 
