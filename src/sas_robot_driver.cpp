@@ -1,5 +1,5 @@
 /*
-# Copyright (c) 2016-2025 Murilo Marques Marinho
+# Copyright (c) 2016-2026 Murilo Marques Marinho
 #
 #    This file is part of sas_robot_driver.
 #
@@ -38,6 +38,26 @@ RobotDriver::RobotDriver(std::atomic_bool *break_loops):
     break_loops_(break_loops)
 {
 
+}
+
+RobotDriver::RobotDriver(const std::shared_ptr<bool>& break_loops):
+    break_loops_(nullptr),
+    break_loops_sptr_(break_loops)
+{
+}
+
+bool RobotDriver::_should_break_loops()
+{
+    if(break_loops_)
+    {
+        return *break_loops_;
+    }
+    else if (break_loops_sptr_)
+    {
+        return *break_loops_sptr_;
+    }
+    else
+        throw std::runtime_error("Unable to dereference break loops flag.");
 }
 
 RobotDriver::~RobotDriver()
@@ -87,7 +107,7 @@ void RobotDriver::_watchdog_thread_function()
 {
     const double thread_freq =1.0/clock_->get_desired_thread_sampling_time_sec();
     clock_->init();
-    while(!(*break_loops_))
+    while(!_should_break_loops())
     {
         try{
             std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();

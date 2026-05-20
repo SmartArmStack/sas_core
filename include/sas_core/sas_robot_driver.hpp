@@ -45,6 +45,7 @@ class RobotDriver
 {
 protected:
     std::atomic_bool* break_loops_;
+    std::shared_ptr<bool> break_loops_sptr_;
     std::tuple<VectorXd, VectorXd> joint_limits_;
     VectorXd joint_velocities_;
     VectorXd joint_torques_;
@@ -59,6 +60,7 @@ protected:
     double max_acceptable_delay_ = 0.1;
     double watchdog_period_;
 
+    RobotDriver(const std::shared_ptr<bool>& break_loops);
     RobotDriver(std::atomic_bool* break_loops);
 
     RobotDriver()=delete;
@@ -67,6 +69,8 @@ protected:
 
     std::exception_ptr watchdog_exception_{nullptr};
     std::mutex watchdog_exception_mutex_;
+
+    bool _should_break_loops();
 public:
     enum class Functionality{
         None=0,

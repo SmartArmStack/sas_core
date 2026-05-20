@@ -111,8 +111,10 @@ install(TARGETS
 
 ament_python_install_package(${PROJECT_NAME})
 
+
 pybind11_add_module(_${PROJECT_NAME} SHARED
     src/sas_core_py.cpp
+    src/sas_robot_driver_py.cpp
     )
 
 target_include_directories(_${PROJECT_NAME}
@@ -134,6 +136,7 @@ install(TARGETS _${PROJECT_NAME}
 ##### PYTHON EXECUTABLES #####
 install(PROGRAMS
   scripts/sas_clock_example_py.py
+  scripts/sas_robot_driver_subclass_example_py.py
   DESTINATION lib/${PROJECT_NAME}
 )
 ##END## PYTHON EXECUTABLES #####

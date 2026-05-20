@@ -21,16 +21,17 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
 # ################################################################*/
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/eigen.h>
 
+#include "sas_core_py.hpp"
 #include <sas_core/sas_clock.hpp>
 
-namespace py = pybind11;
 using C = sas::Clock;
 
+class RobotDriverPy;
+
 PYBIND11_MODULE(_sas_core, m) {
+
+    sas::init_sas_robot_driver_py(m);
 
     py::enum_<sas::Statistics>(m, "Statistics")
             .value("Mean",    sas::Statistics::Mean);
