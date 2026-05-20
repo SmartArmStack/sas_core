@@ -23,39 +23,47 @@
 # ################################################################
 
 import numpy as np
-from sas_core import RobotDriver
+from sas_core import RobotDriver, ShutdownSignaler
 
 class ExampleRobotDriver(RobotDriver):
     break_loop = False
 
-    def __init__(self):
-        RobotDriver.__init__(self, ExampleRobotDriver.break_loop)
-        pass
+    def __init__(self, ss: ShutdownSignaler):
+        RobotDriver.__init__(self, ss)
+        print("ExampleRobotDriver::__init__")
+        self.joint_positions = None
 
     def connect(self):
-        pass
+        print("ExampleRobotDriver::connect")
 
     def disconnect(self):
-        pass
+        print("ExampleRobotDriver::disconnect")
 
     def initialize(self):
-        pass
+        print("ExampleRobotDriver::initialize")
 
     def deinitialize(self):
-        pass
+        print("ExampleRobotDriver::deinitialize")
 
     def get_joint_positions(self):
-        pass
+        return self.joint_positions
 
-    def set_target_joint_positions(self, set_target_joint_positions_rad):
-        pass
+    def set_target_joint_positions(self, target_joint_positions_rad):
+        self.joint_positions = target_joint_positions_rad
 
 def main():
-    robot = ExampleRobotDriver()
+    ss = ShutdownSignaler()
+
+    robot = ExampleRobotDriver(ss)
     robot.connect()
     robot.initialize()
     robot.set_target_joint_positions(np.array([0.0,1.0,2.0,3.0,4.0,5.0,6.0]))
-    robot.get_joint_positions()
+    print(robot.get_joint_positions())
+    robot.set_joint_limits((
+        np.array([-5.0, -5.0, -5.0, -5.0, -5.0]),
+        np.array([5.0, 5.0, 5.0, 5.0, 5.0]),
+    ))
+    print(robot.get_joint_limits())
     robot.deinitialize()
     robot.disconnect()
 

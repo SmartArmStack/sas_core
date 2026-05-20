@@ -24,6 +24,7 @@ add_library(${PROJECT_NAME} SHARED
     src/sas_clock.cpp
     src/sas_core.cpp
     src/sas_object.cpp
+    src/sas_shutdown_signaler.cpp
     # sas_robot_driver
     src/sas_robot_driver.cpp
     src/examples/sas_robot_driver_example.cpp

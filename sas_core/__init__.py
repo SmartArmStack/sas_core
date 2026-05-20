@@ -1,1 +1,1 @@
-from sas_core._sas_core import Clock, Statistics, RobotDriver
+from sas_core._sas_core import Clock, Statistics, RobotDriver, ShutdownSignaler

@@ -67,7 +67,6 @@ protected:
 
     RobotDriver()=delete;
     RobotDriver(const RobotDriver&)=delete;
-    ~RobotDriver();
 
     std::exception_ptr watchdog_exception_{nullptr};
     std::mutex watchdog_exception_mutex_;
@@ -82,6 +81,8 @@ public:
         ClearPositions,
         Watchdog
     };
+
+    ~RobotDriver();
 
     virtual VectorXd get_joint_positions() = 0;
     virtual void set_target_joint_positions(const VectorXd& set_target_joint_positions_rad) = 0;

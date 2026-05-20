@@ -50,7 +50,7 @@ RobotDriver::RobotDriver(const std::shared_ptr<ShutdownSignaler>& shutdown_signa
 RobotDriver::~RobotDriver()
 {
     if (watchdog_thread_ && watchdog_thread_->joinable()) {
-        shutdown_signaler_.shutdown() //To force the thread to shutdown if it hasn't already done so
+        shutdown_signaler_->shutdown(); //To force the thread to shutdown if it hasn't already done so
         watchdog_thread_->join();
     }
 }
@@ -94,7 +94,7 @@ void RobotDriver::_watchdog_thread_function()
 {
     const double thread_freq =1.0/clock_->get_desired_thread_sampling_time_sec();
     clock_->init();
-    while(!shutdown_signaler_.should_shutdown())
+    while(!shutdown_signaler_->should_shutdown())
     {
         try{
             std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();

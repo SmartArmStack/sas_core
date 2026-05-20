@@ -33,6 +33,7 @@ namespace sas
             std::atomic_bool* external_shutdown_signal_{nullptr};
             bool internal_shutdown_signal_{false};
         public:
+            ShutdownSignaler() = default;
             ShutdownSignaler(std::atomic_bool* external_shutdown_signal):
             external_shutdown_signal_(external_shutdown_signal)
             {

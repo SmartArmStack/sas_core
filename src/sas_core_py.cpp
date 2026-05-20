@@ -36,11 +36,10 @@ PYBIND11_MODULE(_sas_core, m) {
     py::enum_<sas::Statistics>(m, "Statistics")
             .value("Mean",    sas::Statistics::Mean);
 
-    py::class_<SS, py::smart_holder> shutdown_signaler(m,"ShutdownSignaler")
-
+    py::class_<SS, py::smart_holder> shutdown_signaler(m,"ShutdownSignaler");
     shutdown_signaler.def(py::init<>());
-    shutdown_signaler.def("should_shutdown", &SS::should_shutdown, "")
-    shutdown_signaler.def("shutdown", &SS::shutdown, "")
+    shutdown_signaler.def("should_shutdown", &SS::should_shutdown, "");
+    shutdown_signaler.def("shutdown", &SS::shutdown, "");
 
     py::class_<C, py::smart_holder> clock(m, "Clock");
 

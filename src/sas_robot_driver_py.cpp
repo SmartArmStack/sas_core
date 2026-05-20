@@ -35,7 +35,11 @@ namespace sas
 class RobotDriverPy: public RobotDriver, public py::trampoline_self_life_support
 {
 public:
-    using RobotDriver::RobotDriver;
+    RobotDriverPy(const std::shared_ptr<ShutdownSignaler>& ss):
+    RobotDriver(ss)
+    {
+    };
+    ~RobotDriverPy()=default;
 
     /* Trampoline (need one for each virtual function) */
     VectorXd get_joint_positions() override
@@ -43,7 +47,7 @@ public:
         PYBIND11_OVERRIDE_PURE(
             VectorXd,                  /* Return type */
             RobotDriver,               /* Parent class */
-            get_joint_positions       /* Name of function in C++ (must match Python name) */
+            get_joint_positions,       /* Name of function in C++ (must match Python name) */
                                    /* Argument(s) */
             );
     }
@@ -62,7 +66,7 @@ public:
         PYBIND11_OVERRIDE(
             VectorXd,
             RobotDriver,
-            get_joint_velocities
+            get_joint_velocities,
             );
     }
 
@@ -81,7 +85,7 @@ public:
         PYBIND11_OVERRIDE(
         VectorXd,
         RobotDriver,
-        get_joint_torques
+        get_joint_torques,
         );
     }
 
@@ -101,7 +105,7 @@ public:
     //    PYBIND11_OVERRIDE(
     //    std::tuple<VectorXd, VectorXd>,
     //    RobotDriver,
-    //    get_joint_limits
+    //    get_joint_limits,
     //    );
     //}
 
@@ -120,7 +124,7 @@ public:
         PYBIND11_OVERRIDE_PURE(
         void,
         RobotDriver,
-        connect
+        connect,
         );
     }
 
@@ -129,7 +133,7 @@ public:
         PYBIND11_OVERRIDE_PURE(
         void,
         RobotDriver,
-        disconnect
+        disconnect,
         );
     }
 
@@ -138,7 +142,7 @@ public:
         PYBIND11_OVERRIDE_PURE(
         void,
         RobotDriver,
-        initialize
+        initialize,
         );
     }
 
@@ -147,7 +151,7 @@ public:
         PYBIND11_OVERRIDE_PURE(
         void,
         RobotDriver,
-        deinitialize
+        deinitialize,
         );
     }
 };
