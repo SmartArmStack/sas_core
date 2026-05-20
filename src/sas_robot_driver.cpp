@@ -36,7 +36,7 @@ namespace sas
 
 RobotDriver::RobotDriver(std::atomic_bool *break_loops):
     break_loops_(break_loops),
-    shutdown_signaler_(std::shared_ptr<ShutdownSignaler>(break_loops))
+    shutdown_signaler_(std::make_shared<ShutdownSignaler>(break_loops))
 {
 
 }
