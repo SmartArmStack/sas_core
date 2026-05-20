@@ -24,10 +24,10 @@
 
 #include "sas_core_py.hpp"
 #include <sas_core/sas_clock.hpp>
+#include <sas_core/sas_shutdown_signaler.hpp>
 
 using C = sas::Clock;
-
-class RobotDriverPy;
+using SS = sas::ShutdownSignaler;
 
 PYBIND11_MODULE(_sas_core, m) {
 
@@ -36,8 +36,13 @@ PYBIND11_MODULE(_sas_core, m) {
     py::enum_<sas::Statistics>(m, "Statistics")
             .value("Mean",    sas::Statistics::Mean);
 
+    py::class_<SS, py::smart_holder> shutdown_signaler(m,"ShutdownSignaler")
 
-    py::class_<C> clock(m, "Clock");
+    shutdown_signaler.def(py::init<>());
+    shutdown_signaler.def("should_shutdown", &SS::should_shutdown, "")
+    shutdown_signaler.def("shutdown", &SS::shutdown, "")
+
+    py::class_<C, py::smart_holder> clock(m, "Clock");
 
     clock.def(py::init<double>());
     clock.def("init",&C::init,"Initialize clock.");

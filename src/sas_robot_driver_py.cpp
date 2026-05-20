@@ -160,7 +160,7 @@ void init_sas_robot_driver_py(py::module& m)
             py::smart_holder
             > c(m,"RobotDriver");
 
-    c.def(py::init<const std::shared_ptr<bool>&>());
+    c.def(py::init<const std::shared_ptr<ShutdownSignaler>&>());
 
     c.def("get_joint_positions", &RobotDriver::get_joint_positions, "");
     c.def("set_target_joint_positions", &RobotDriver::set_target_joint_positions, "");

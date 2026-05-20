@@ -34,6 +34,7 @@
 #include <thread>
 #include <memory>
 #include <chrono>
+#include <sas_core/sas_shutdown_signaler.hpp>
 #include <sas_core/sas_clock.hpp>
 #include <eigen3/Eigen/Dense>
 
@@ -44,8 +45,8 @@ namespace sas
 class RobotDriver
 {
 protected:
-    std::atomic_bool* break_loops_;
-    std::shared_ptr<bool> break_loops_sptr_;
+    std::atomic_bool* break_loops_; //Deprecated
+    std::shared_ptr<ShutdownSignaler> shutdown_signaler_;
     std::tuple<VectorXd, VectorXd> joint_limits_;
     VectorXd joint_velocities_;
     VectorXd joint_torques_;
@@ -60,7 +61,8 @@ protected:
     double max_acceptable_delay_ = 0.1;
     double watchdog_period_;
 
-    RobotDriver(const std::shared_ptr<bool>& break_loops);
+    RobotDriver(const std::shared_ptr<ShutdownSignaler>& shutdown_signaler_);
+    [[deprecated("Use RobotDriver(const std::shared_ptr<ShutdownSignaler>& shutdown_signaler_) instead.")]]
     RobotDriver(std::atomic_bool* break_loops);
 
     RobotDriver()=delete;
@@ -70,7 +72,6 @@ protected:
     std::exception_ptr watchdog_exception_{nullptr};
     std::mutex watchdog_exception_mutex_;
 
-    bool _should_break_loops();
 public:
     enum class Functionality{
         None=0,

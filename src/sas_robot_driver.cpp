@@ -35,35 +35,22 @@ namespace sas
 {
 
 RobotDriver::RobotDriver(std::atomic_bool *break_loops):
-    break_loops_(break_loops)
+    break_loops_(break_loops),
+    shutdown_signaler_(std::shared_ptr<ShutdownSignaler>(break_loops))
 {
 
 }
 
-RobotDriver::RobotDriver(const std::shared_ptr<bool>& break_loops):
+RobotDriver::RobotDriver(const std::shared_ptr<ShutdownSignaler>& shutdown_signaler):
     break_loops_(nullptr),
-    break_loops_sptr_(break_loops)
+    shutdown_signaler_(shutdown_signaler)
 {
-}
-
-bool RobotDriver::_should_break_loops()
-{
-    if(break_loops_)
-    {
-        return *break_loops_;
-    }
-    else if (break_loops_sptr_)
-    {
-        return *break_loops_sptr_;
-    }
-    else
-        throw std::runtime_error("Unable to dereference break loops flag.");
 }
 
 RobotDriver::~RobotDriver()
 {
     if (watchdog_thread_ && watchdog_thread_->joinable()) {
-        *break_loops_ = true;  //To force the thread to shutdown if it hasn't already done so
+        shutdown_signaler_.shutdown() //To force the thread to shutdown if it hasn't already done so
         watchdog_thread_->join();
     }
 }
@@ -107,7 +94,7 @@ void RobotDriver::_watchdog_thread_function()
 {
     const double thread_freq =1.0/clock_->get_desired_thread_sampling_time_sec();
     clock_->init();
-    while(!_should_break_loops())
+    while(!shutdown_signaler_.should_shutdown())
     {
         try{
             std::chrono::system_clock::time_point current_time = std::chrono::system_clock::now();
