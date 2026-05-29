@@ -95,6 +95,21 @@ install(TARGETS
 
 ##### CPP BINARY #####
 
+add_executable(sas_clock_sched_fifo_example
+    src/examples/sas_clock_sched_fifo_example.cpp)
+
+target_link_libraries(sas_clock_sched_fifo_example
+    ${PROJECT_NAME}
+    )
+
+install(TARGETS
+    sas_clock_sched_fifo_example
+    DESTINATION lib/${PROJECT_NAME})
+
+##END## CPP BINARY #####
+
+##### CPP BINARY #####
+
 add_executable(sas_robot_driver_example
     src/examples/sas_robot_driver_example_main.cpp)
 
