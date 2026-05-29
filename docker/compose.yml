@@ -13,4 +13,6 @@ services:
       && ros2 run sas_core sas_clock_example
       && ros2 run sas_core sas_clock_example_py.py
       && ros2 run sas_core sas_robot_driver_example
-      && ros2 run sas_core sas_robot_driver_subclass_example_py.py"
+      && ros2 run sas_core sas_robot_driver_subclass_example_py.py
+      && ros2 run sas_core sas_clock_sched_fifo_example
+      "
