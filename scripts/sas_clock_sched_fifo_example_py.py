@@ -30,24 +30,21 @@ if __name__=='__main__':
     clock = Clock(0.001)
 
     param = os.sched_param(os.sched_get_priority_max(os.SCHED_FIFO))
-    os.sched_setscheduler(0, os.SCHED_FIFO, param)
+    try:
+        os.sched_setscheduler(0, os.SCHED_FIFO, param)
+    except PermissionError as e:
+        print(e)
 
     # Always initialize before the loop to reduce latency
     clock.init()
 
     for i in range(0,50):
-        # Starting the loop with an update reduces issues with the first loop taking too long
         clock.update_and_sleep()
+        # Starting the loop with an update reduces issues with the first loop taking too long
 
     # Statistics
     print("Statistics for the entire loop")
-    print("  Mean computation time: {}".format(clock.get_statistics(
-        Statistics.Mean, Clock.TimeType.Computational)
-    ))
-    print("  Mean idle time: {}".format(clock.get_statistics(
-        Statistics.Mean, Clock.TimeType.Idle)
-    ))
-    print("  Mean effective thread sampling time: {}".format(clock.get_statistics(
-        Statistics.Mean, Clock.TimeType.EffectiveSampling)
-    ))
-    print("  Overrun count: ".format(clock.get_overrun_count()))
+    print(f"  Mean computation time: {clock.get_statistics(Statistics.Mean, Clock.TimeType.Computational)}")
+    print(f"  Mean idle time: {clock.get_statistics(Statistics.Mean, Clock.TimeType.Idle)}")
+    print(f"  Mean effective thread sampling time: {clock.get_statistics(Statistics.Mean, Clock.TimeType.EffectiveSampling)}")
+    print(f"  Overrun count: {clock.get_overrun_count()}")
