@@ -66,22 +66,79 @@ public:
     Clock()=delete;
     Clock(const int&)=delete;
 
+    /**
+     * @brief Construct a Clock
+     * @param sampling_time_in_seconds Desired sampling time in seconds
+     * @param enable_statistics Whether to enable internal statistics collection (default: true)
+     */
     explicit Clock(const double& sampling_time_in_seconds, const bool& enable_statistics=true);
 
+    /**
+     * @brief Initialize the clock internal state and timers
+     */
     void init();
+
+    /**
+     * @brief Update internal timing measurements and sleep to respect target sampling time
+     */
     void update_and_sleep();
+
+    /**
+     * @brief Get elapsed time since last update in seconds
+     * @return Elapsed time in seconds
+     */
     double get_elapsed_time_sec() const;
 
+    /**
+     * @brief Get the initial time point recorded by the clock
+     * @return time_point of the initial time
+     */
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> get_initial_time() const;
+
+    /**
+     * @brief Get the time point of the last update
+     * @return time_point of the last update
+     */
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds> get_last_update_time() const;
 
+    /**
+     * @brief Sleep for the specified duration while allowing early exit via break_loop
+     * @param seconds Sleep duration in seconds
+     * @param break_loop Pointer to an atomic boolean that will interrupt the sleep if set
+     */
     void safe_sleep_seconds(const double& seconds, std::atomic_bool* break_loop);
+
+    /**
+     * @brief Block the calling thread for the specified duration (no early exit)
+     * @param seconds Sleep duration in seconds
+     */
     void blocking_sleep_seconds(const double& seconds);
 
+    /**
+     * @brief Return the desired sampling time for the thread in seconds
+     * @return Desired sampling time in seconds
+     */
     double get_desired_thread_sampling_time_sec() const;
+
+    /**
+     * @brief Return the number of times the sampling has overrun the target period
+     * @return Overrun count
+     */
     long get_overrun_count() const;
 
+    /**
+     * @brief Get a time value for the provided TimeType
+     * @param time_type The TimeType (Computational, EffectiveSampling, Idle)
+     * @return Time value in seconds corresponding to time_type
+     */
     double get_time(const TimeType& time_type) const;
+
+    /**
+     * @brief Get a statistic value for the given statistic type and TimeType
+     * @param statistics The statistic to query (see sas::Statistics)
+     * @param time_type The TimeType to which the statistic applies
+     * @return The requested statistic value as a double
+     */
     double get_statistics(const Statistics &statistics, const TimeType &time_type) const;
 
     ///Deprecated

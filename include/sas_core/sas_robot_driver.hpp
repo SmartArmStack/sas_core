@@ -71,7 +71,10 @@ protected:
     std::exception_ptr watchdog_exception_{nullptr};
     std::mutex watchdog_exception_mutex_;
 
-public:
+    public:
+    /**
+     * @brief Enumeration of optional driver functionalities
+     */
     enum class Functionality{
         None=0,
         PositionControl,
@@ -82,31 +85,104 @@ public:
         Watchdog
     };
 
+    /**
+     * @brief Virtual destructor for RobotDriver
+     */
     ~RobotDriver();
 
+    /**
+     * @brief Get current joint positions
+     * @return Vector of joint positions (radians)
+     */
     virtual VectorXd get_joint_positions() = 0;
+
+    /**
+     * @brief Set target joint positions
+     * @param set_target_joint_positions_rad Target joint positions (radians)
+     */
     virtual void set_target_joint_positions(const VectorXd& set_target_joint_positions_rad) = 0;
 
+    /**
+     * @brief Get current joint velocities
+     * @return Vector of joint velocities
+     */
     virtual VectorXd get_joint_velocities();
+
+    /**
+     * @brief Set target joint velocities
+     * @param set_target_joint_velocities Target joint velocities
+     */
     virtual void set_target_joint_velocities(const VectorXd& set_target_joint_velocities);
 
+    /**
+     * @brief Get current joint torques
+     * @return Vector of joint torques
+     */
     virtual VectorXd get_joint_torques();
+
+    /**
+     * @brief Set target joint torques
+     * @param set_target_joint_torques Target joint torques
+     */
     virtual void set_target_joint_torques(const VectorXd& set_target_joint_torques);
 
+    /**
+     * @brief Get joint limits (min, max)
+     * @return Tuple of (min_limits, max_limits)
+     */
     virtual std::tuple<VectorXd, VectorXd> get_joint_limits();
+
+    /**
+     * @brief Set joint limits (min, max)
+     * @param joint_limits Tuple of (min_limits, max_limits)
+     */
     virtual void set_joint_limits(const std::tuple<VectorXd, VectorXd>& joint_limits);
 
+    /**
+     * @brief Start the watchdog thread with the given period
+     * @param period Watchdog period as nanoseconds
+     */
     void watchdog_start(const std::chrono::nanoseconds& period);
+
+    /**
+     * @brief Trigger the watchdog with timestamps from client/server and the current status
+     * @param time_point_from_the_client Time point provided by the client
+     * @param time_point_from_the_server Time point provided by the server
+     * @param status Current watchdog status flag
+     */
     void watchdog_trigger(const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_client,
                           const std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>& time_point_from_the_server,
                           const bool& status);
+
+    /**
+     * @brief Set the maximum acceptable delay for the watchdog (seconds)
+     * @param max_acceptable_delay Maximum delay in seconds
+     */
     void watchdog_set_maximum_acceptable_delay(const double& max_acceptable_delay);
+
+    /**
+     * @brief Check for exceptions thrown by the watchdog thread and rethrow if present
+     */
     void check_for_watchdog_exceptions();
 
+    /**
+     * @brief Connect to the underlying robot/hardware
+     */
     virtual void connect()=0;
+
+    /**
+     * @brief Disconnect from the underlying robot/hardware
+     */
     virtual void disconnect()=0;
 
+    /**
+     * @brief Initialize the driver resources
+     */
     virtual void initialize()=0;
+
+    /**
+     * @brief Deinitialize the driver resources
+     */
     virtual void deinitialize()=0;
 };
 }

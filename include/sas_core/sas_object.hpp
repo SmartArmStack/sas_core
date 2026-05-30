@@ -35,6 +35,10 @@ protected:
     Object(const std::string& class_name);
 public:
     Object() = delete;
+    /**
+     * @brief Get the class name identifier
+     * @return The class name as a std::string
+     */
     std::string get_class_name() const;
 };
 }

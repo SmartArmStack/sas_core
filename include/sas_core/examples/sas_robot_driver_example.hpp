@@ -48,15 +48,43 @@ public:
     RobotDriverExample(RobotDriverExample&) = delete;
     RobotDriverExample()=delete;
 
+    /**
+     * @brief Construct a RobotDriverExample with configuration
+     * @param configuration Example configuration (name, initial positions, joint limits)
+     * @param break_loops Optional pointer to an atomic_bool used to break loops
+     */
     RobotDriverExample(const RobotDriverExampleConfiguration& configuration, std::atomic_bool* break_loops);
 
+    /**
+     * @brief Get the current joint positions
+     * @return Vector of joint positions (radians)
+     */
     virtual VectorXd get_joint_positions() override;
+
+    /**
+     * @brief Set target joint positions
+     * @param set_target_joint_positions_rad Target joint positions in radians
+     */
     virtual void set_target_joint_positions(const VectorXd& set_target_joint_positions_rad) override;
 
+    /**
+     * @brief Connect the example driver (establish resources)
+     */
     virtual void connect() override;
+
+    /**
+     * @brief Disconnect the example driver (release resources)
+     */
     virtual void disconnect() override;
 
+    /**
+     * @brief Initialize the example driver
+     */
     virtual void initialize() override;
+
+    /**
+     * @brief Deinitialize the example driver
+     */
     virtual void deinitialize() override;
 };
 }
