@@ -23,6 +23,14 @@
 #
 # ################################################################*/
 
+/**
+ * @file sas_conversions.hpp
+ * @brief Aggregated include header for conversion helpers.
+ *
+ * This header re-exports conversion helpers between DQ/Eigen and ROS
+ * message types so other modules can include a single header to obtain all
+ * conversion utilities.
+ */
 #include<sas_conversions/DQ_geometry_msgs_conversions.h>
 #include<sas_conversions/std_std_msgs_conversions.h>
 #include<sas_conversions/eigen3_std_conversions.h>

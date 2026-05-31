@@ -21,6 +21,15 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
 # ################################################################*/
+/**
+ * @file sas_core.hpp
+ * @brief Core numerical utilities and helpers used across the project.
+ *
+ * This header contains lightweight, frequently used numeric helpers such as
+ * incremental mean computation, vector/matrix concatenation, block-diagonal
+ * assembly and vector splitting utilities. These utilities are intended to be
+ * header-only and efficient for use in real-time control loops.
+ */
 #pragma once
 
 #include <eigen3/Eigen/Dense>

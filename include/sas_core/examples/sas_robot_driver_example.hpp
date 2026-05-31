@@ -21,6 +21,14 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
 # ################################################################*/
+/**
+ * @file sas_robot_driver_example.hpp
+ * @brief Example RobotDriver implementation for testing and demonstration.
+ *
+ * Provides a simple in-memory RobotDriverExample used as a reference
+ * implementation for testing the RobotDriver interfaces without requiring
+ * real hardware. Useful for unit tests and examples.
+ */
 #pragma once
 
 #include <sas_core/sas_robot_driver.hpp>

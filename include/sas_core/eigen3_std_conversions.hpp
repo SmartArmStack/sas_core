@@ -23,6 +23,14 @@
 #
 # ################################################################*/
 
+/**
+ * @file eigen3_std_conversions.hpp
+ * @brief Conversions between Eigen, std::vector and DQ types.
+ *
+ * Small utility functions to convert between Eigen's Vector/Matrix types,
+ * std::vector and DQ (dual quaternion) representations used across the
+ * project. These helpers simplify interoperability between libraries.
+ */
 #include<vector>
 #include<eigen3/Eigen/Dense>
 #include<dqrobotics/DQ.h>

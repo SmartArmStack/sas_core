@@ -29,6 +29,14 @@
 #      https://github.com/SmartArmStack/sas_core/pull/1
 */
 
+/**
+ * @file sas_robot_driver.hpp
+ * @brief Abstract RobotDriver interface and watchdog support.
+ *
+ * Declares the RobotDriver abstract base class which concrete drivers must
+ * implement to interact with hardware. The header also contains watchdog
+ * management helpers used by driver implementations.
+ */
 #include <atomic>
 #include <mutex>
 #include <thread>

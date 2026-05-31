@@ -23,6 +23,15 @@
 #
 # ################################################################*/
 
+/**
+ * @file sas_clock.hpp
+ * @brief Timing utilities for control loops and statistics collection.
+ *
+ * The Clock class provides helpers to manage loop timing, sleep with
+ * early exit, compute elapsed times and collect optional statistics for
+ * computational time, idle time and effective sampling time used by
+ * control threads.
+ */
 #include <atomic>
 #include <chrono>
 #include <map>

@@ -23,6 +23,15 @@
 #
 # ################################################################*/
 
+/**
+ * @file sas_shutdown_signaler.hpp
+ * @brief Cross-module shutdown signaling helper.
+ *
+ * Provides a small helper class that coordinates shutdown requests between
+ * different parts of the system using either an external atomic flag or an
+ * internal flag. Useful to unify shutdown behavior in both ROS and non-ROS
+ * contexts.
+ */
 #include<atomic>
 
 namespace sas
