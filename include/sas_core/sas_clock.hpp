@@ -45,10 +45,11 @@ namespace sas
 class Clock : private sas::Object
 {
 public:
+    /** @brief Enumeration of time types, see get_time() and get_statistics() */
     enum class TimeType{
-        Computational,
-        EffectiveSampling,
-        Idle
+        Computational, ///< Time spent between when the instant the previous sleep ended and the instant when the current one started.
+        EffectiveSampling, ///< The effective sampling time between sleeps (EffectiveSampling = Computational + Idle).
+        Idle ///< Time spent between the instant when the previous sleep started and the instant when it ended.
     };
 private:
 
