@@ -151,6 +151,8 @@ public:
      * @param statistics The statistic to query (see sas::Statistics)
      * @param time_type The TimeType to which the statistic applies
      * @return The requested statistic value as a double
+     * @throws std::runtime_error if statistics collection was not enabled at construction
+     *         or if the requested statistic is not available for the provided TimeType.
      */
     double get_statistics(const Statistics &statistics, const TimeType &time_type) const;
 
