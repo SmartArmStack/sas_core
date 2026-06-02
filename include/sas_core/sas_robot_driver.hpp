@@ -119,24 +119,28 @@ protected:
     /**
      * @brief Get current joint velocities
      * @return Vector of joint velocities
+     * @throws std::runtime_error if the default implementation is used (not implemented by derived driver)
      */
     virtual VectorXd get_joint_velocities();
 
     /**
      * @brief Set target joint velocities
      * @param set_target_joint_velocities Target joint velocities
+     * @throws std::runtime_error if the default implementation is used (not implemented by derived driver)
      */
     virtual void set_target_joint_velocities(const VectorXd& set_target_joint_velocities);
 
     /**
      * @brief Get current joint torques
      * @return Vector of joint torques
+     * @throws std::runtime_error if the default implementation is used (not implemented by derived driver)
      */
     virtual VectorXd get_joint_torques();
 
     /**
      * @brief Set target joint torques
      * @param set_target_joint_torques Target joint torques
+     * @throws std::runtime_error if the default implementation is used (not implemented by derived driver)
      */
     virtual void set_target_joint_torques(const VectorXd& set_target_joint_torques);
 
@@ -176,6 +180,8 @@ protected:
 
     /**
      * @brief Check for exceptions thrown by the watchdog thread and rethrow if present
+     * @throws std::runtime_error if the watchdog thread detected a timing or status error
+     * @throws std::exception rethrows any exception captured from the watchdog thread
      */
     void check_for_watchdog_exceptions();
 

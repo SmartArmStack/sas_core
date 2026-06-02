@@ -84,6 +84,7 @@ public:
     /**
      * @brief Set target joint positions
      * @param set_target_joint_positions_rad Target joint positions in radians
+     * @throws std::runtime_error if the provided vector has incorrect size
      */
     virtual void set_target_joint_positions(const VectorXd& set_target_joint_positions_rad) override;
 

@@ -169,9 +169,9 @@ double Clock::get_time(const TimeType &time_type) const
 double Clock::get_statistics(const Statistics& statistics, const TimeType& time_type) const
 {
     if(not enable_statistics_)
-        std::runtime_error("Statistics were not enabled, get_statistics will not return a valid value");
+        throw std::runtime_error("Statistics were not enabled, get_statistics will not return a valid value");
     if(statistics_map_.count({time_type,statistics})<=0)
-        std::runtime_error("Requested statistics is not available.");
+        throw std::runtime_error("Requested statistics is not available.");
 
     return std::chrono::duration_cast<
             std::chrono::duration<double>

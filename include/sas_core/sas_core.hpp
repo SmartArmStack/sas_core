@@ -57,6 +57,7 @@ template<class T>
  * @param current_mean the current value of the mean.
  * @param current_number_of_samples the current number of samples, not considering the new_sample.
  * @param new_sample the new sample that will change the mean.
+ * @throws std::range_error if current_number_of_samples is negative.
  * @return the incremental mean, considering the new_sample.
  */
 constexpr T incremental_mean(const T &current_mean, const int &current_number_of_samples, const T &new_sample)
@@ -86,6 +87,7 @@ VectorXd concatenate(const std::vector<VectorXd>& as);
  * @param A Top matrix.
  * @param B Bottom matrix.
  * @return Matrix formed by stacking A on top of B. Columns must match.
+ * @throws std::range_error if A and B have different numbers of columns.
  */
 MatrixXd vstack(const MatrixXd& A, const MatrixXd& B);
 
