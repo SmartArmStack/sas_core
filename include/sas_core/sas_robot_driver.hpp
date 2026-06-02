@@ -50,6 +50,12 @@ using namespace Eigen;
 
 namespace sas
 {
+/**
+ * @brief Abstract interface for robot hardware drivers.
+ *
+ * RobotDriver declares the virtual API that concrete drivers must implement
+ * to interact with robot hardware.
+ */
 class RobotDriver
 {
 protected:

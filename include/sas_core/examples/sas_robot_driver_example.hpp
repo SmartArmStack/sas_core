@@ -38,7 +38,12 @@ using namespace Eigen;
 
 namespace sas
 {
-
+/**
+ * @brief Configuration for the RobotDriverExample.
+ *
+ * Holds example-specific parameters such as a human-readable name, initial
+ * joint positions and joint limits used by the in-memory example driver.
+ */
 struct RobotDriverExampleConfiguration
 {
     std::string name;
@@ -46,7 +51,14 @@ struct RobotDriverExampleConfiguration
     std::tuple<VectorXd,VectorXd> joint_limits;
 };
 
-class RobotDriverExample: public RobotDriver
+/**
+ * @brief Simple in-memory RobotDriver implementation for testing.
+ *
+ * RobotDriverExample is a lightweight, non-hardware driver that implements
+ * the RobotDriver interface. It is intended for unit tests and examples and
+ * simulates joint state updates using the provided configuration.
+ */
+ class RobotDriverExample: public RobotDriver
 {
 protected:
     const RobotDriverExampleConfiguration configuration_;

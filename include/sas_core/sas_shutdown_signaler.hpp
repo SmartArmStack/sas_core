@@ -35,6 +35,12 @@
 
 namespace sas
 {
+    /**
+     * @brief Lightweight shutdown coordinator.
+     *
+     * ShutdownSignaler provides a small, thread-safe mechanism to unify
+     * shutdown requests.
+     */
     class ShutdownSignaler
     {
         private:

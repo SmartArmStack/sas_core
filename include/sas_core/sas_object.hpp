@@ -33,6 +33,9 @@
 
 namespace sas
 {
+/**
+ * @brief Base class for SAS objects.
+ */
 class Object
 {
 protected:

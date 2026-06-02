@@ -42,6 +42,9 @@
 namespace sas
 {
 
+/**
+ * @brief Clock utility for timing and statistics in control loops.
+ */
 class Clock : private sas::Object
 {
 public:
