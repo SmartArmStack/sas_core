@@ -39,6 +39,13 @@ using namespace Eigen;
 namespace sas
 {
 
+/**
+ * @brief Statistical measures supported by sas_core utilities.
+ *
+ * Enumeration of lightweight statistics that classes and functions may
+ * compute (for example, Clock statistics). Add new entries here as new
+ * statistics are supported.
+ */
 enum class Statistics{
     Mean
 };

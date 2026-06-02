@@ -5,7 +5,7 @@
 This module re-exports the primary Python bindings provided by the
 compiled extension module :mod:`sas_core._sas_core`.
 
-- Clock: high-resolution timing and sleep helpers.
+- Clock: high-resolution timing and sleep class.
 - Statistics: enumeration for statistical types.
 - RobotDriver: abstract robot driver interface that can be inherited by Python classes.
 - ShutdownSignaler: request and wait for orderly shutdown.

@@ -40,10 +40,39 @@ using namespace DQ_robotics;
 
 namespace sas
 {
+/**
+ * @brief Convert an Eigen::VectorXd to a std::vector<double>.
+ * @param vectorxd Source Eigen vector.
+ * @return std::vector<double> containing the same elements in order.
+ */
 std::vector<double> vectorxd_to_std_vector_double(const VectorXd& vectorxd);
+
+/**
+ * @brief Convert an Eigen::VectorXi to a std::vector<int>.
+ * @param vectorxi Source Eigen integer vector.
+ * @return std::vector<int> containing the same elements in order.
+ */
 std::vector<int>    vectorxi_to_std_vector_int(const VectorXi& vectorxi);
+
+/**
+ * @brief Convert a std::vector<double> to an Eigen::VectorXd.
+ * @param std_vector_double Source std::vector<double>.
+ * @return VectorXd containing the same elements.
+ */
 VectorXd            std_vector_double_to_vectorxd(std::vector<double> std_vector_double);
+
+/**
+ * @brief Convert a std::vector<int> to an Eigen::VectorXi.
+ * @param std_vector_int Source std::vector<int>.
+ * @return VectorXi containing the same elements.
+ */
 VectorXi            std_vector_int_to_vectorxi(std::vector<int> std_vector_int);
+
+/**
+ * @brief Convert a std::vector<double> to a DQ (dual quaternion) object.
+ * @param std_vector_double Source std::vector<double> containing the DQ coefficients.
+ * @return DQ constructed from the provided coefficients.
+ */
 DQ                  std_vector_double_to_dq(const std::vector<double>& std_vector_double);
 }
 
