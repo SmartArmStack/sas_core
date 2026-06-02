@@ -27,19 +27,19 @@
  * @file sas_shutdown_signaler.hpp
  * @brief Cross-module shutdown signaling class.
  *
- * Provides a lightweight class that coordinates shutdown requests between
- * different parts of the system. Useful to unify shutdown behavior in both ROS and non-ROS
- * contexts.
+ * Provides a class that coordinates shutdown requests between different
+ * parts of the system. Useful to unify shutdown behavior in both ROS and
+ * non-ROS contexts.
  */
 #include<atomic>
 
 namespace sas
 {
     /**
-     * @brief Lightweight shutdown coordinator.
+     * @brief Shutdown coordinator.
      *
-     * ShutdownSignaler provides a small, thread-safe mechanism to unify
-     * shutdown requests.
+     * ShutdownSignaler provides a thread-safe mechanism to unify shutdown
+     * requests.
      */
     class ShutdownSignaler
     {
