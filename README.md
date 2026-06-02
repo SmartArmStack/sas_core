@@ -1,7 +1,7 @@
 # sas_core
 
 > [!TIP]
-> Repository for this module: https://github.com/SmartArmStack/sas_core. 
+> Repository for this module: https://github.com/SmartArmStack/sas_core. <br/>
 > More information about SmartArmStack is available in https://smartarmstack.github.io/.
 
 ## Contents

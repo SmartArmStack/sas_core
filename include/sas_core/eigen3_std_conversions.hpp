@@ -29,7 +29,7 @@
  *
  * Small utility functions to convert between Eigen's Vector/Matrix types,
  * std::vector and DQ (dual quaternion) representations used across the
- * project. These classes simplify interoperability between libraries.
+ * project.
  */
 #include<vector>
 #include<eigen3/Eigen/Dense>
