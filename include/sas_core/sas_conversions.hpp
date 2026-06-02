@@ -25,9 +25,9 @@
 
 /**
  * @file sas_conversions.hpp
- * @brief Aggregated include header for conversion helpers.
+ * @brief Aggregated include header for conversion methods/functions.
  *
- * This header re-exports conversion helpers between DQ/Eigen and ROS
+ * This header re-exports conversion methods/functions between DQ/Eigen and ROS
  * message types so other modules can include a single header to obtain all
  * conversion utilities.
  */

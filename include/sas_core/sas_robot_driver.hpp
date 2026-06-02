@@ -35,7 +35,7 @@
  *
  * Declares the RobotDriver abstract base class which concrete drivers must
  * implement to interact with hardware. The header also contains watchdog
- * management helpers used by driver implementations.
+ * management used by driver implementations.
  */
 #include <atomic>
 #include <mutex>

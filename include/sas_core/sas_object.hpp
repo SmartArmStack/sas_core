@@ -27,9 +27,7 @@
  * @file sas_object.hpp
  * @brief Base object class for identification and license utilities.
  *
- * Defines the sas::Object class which provides a simple class name identifier
- * and a helper to print the license header. Many components derive from this
- * lightweight base to standardize logging and identification.
+ * Defines the sas::Object class standardises sas Objects, such as license header printing.
  */
 #include <string>
 
