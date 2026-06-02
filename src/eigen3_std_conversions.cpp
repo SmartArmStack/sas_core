@@ -22,6 +22,10 @@
 #
 # ################################################################*/
 
+/**
+ * @file eigen3_std_conversions.cpp
+ * @brief Conversion functions between Eigen, STL containers, and DQ.
+ */
 #include<sas_core/eigen3_std_conversions.hpp>
 
 namespace sas

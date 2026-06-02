@@ -22,6 +22,11 @@
 #
 # ################################################################*/
 
+/**
+ * @file sas_clock_example.cpp
+ * @brief Example showing how to use sas::Clock to time loops.
+ */
+
 #include <iostream>
 
 #include <sas_core/sas_clock.hpp>

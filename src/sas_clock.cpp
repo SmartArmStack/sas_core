@@ -22,6 +22,11 @@
 #
 # ################################################################*/
 
+/**
+ * @file sas_clock.cpp
+ * @brief Timing utilities for control loops.
+ */
+
 #include <thread>
 
 #include "sas_core/sas_clock.hpp"

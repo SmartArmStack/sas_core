@@ -21,6 +21,11 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
 # ################################################################*/
+
+/**
+ * @file sas_robot_driver_example_main.cpp
+ * @brief C++ example showcasing a sample RobotDriver subclass.
+ */
 #include <sas_core/examples/sas_robot_driver_example.hpp>
 #include <iostream>
 

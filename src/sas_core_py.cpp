@@ -22,6 +22,11 @@
 #
 # ################################################################*/
 
+/**
+ * @file sas_core_py.cpp
+ * @brief Python bindings for core classes.
+ */
+
 #include "sas_core_py.hpp"
 #include <sas_core/sas_clock.hpp>
 #include <sas_core/sas_shutdown_signaler.hpp>

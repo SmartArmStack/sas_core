@@ -21,6 +21,11 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
 # ################################################################*/
+
+/**
+ * @file sas_object.cpp
+ * @brief Implementation of the Object base class.
+ */
 #include "sas_core/sas_object.hpp"
 
 #include <iostream>

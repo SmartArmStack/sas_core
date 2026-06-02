@@ -22,7 +22,12 @@
 #
 # #################################################################
 # Contributors:
-*/
+#*/
+
+/**
+ * @file sas_shutdown_signaler.cpp
+ * @brief Implements ShutdownSignaler for coordinated shutdown requests.
+ */
 
 #include<sas_core/sas_shutdown_signaler.hpp>
 

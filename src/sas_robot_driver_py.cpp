@@ -22,7 +22,12 @@
 #
 # #################################################################
 # Contributors:
-*/
+#*/
+
+/**
+ * @file sas_robot_driver_py.cpp
+ * @brief Pybind11 trampoline and bindings for RobotDriver.
+ */
 
 #include "sas_core_py.hpp"
 #include <sas_core/sas_robot_driver.hpp>

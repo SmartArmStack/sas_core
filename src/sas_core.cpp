@@ -21,6 +21,11 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
 # ################################################################*/
+
+/**
+ * @file sas_core.cpp
+ * @brief Implementation of core functions.
+ */
 #include <sas_core/sas_core.hpp>
 #include <mutex>
 

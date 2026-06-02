@@ -22,6 +22,11 @@
 #
 # ################################################################*/
 
+/**
+ * @file sas_core_example.cpp
+ * @brief Example testing core utilities.
+ */
+
 #include <eigen3/Eigen/Dense>
 #include <sas_core/sas_core.hpp>
 

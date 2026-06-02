@@ -22,6 +22,11 @@
 #
 # ################################################################*/
 
+/**
+ * @file sas_clock_sched_fifo_example.cpp
+ * @brief Example demonstrating Clock with realtime SCHED_FIFO.
+ */
+
 #include <iostream>
 
 #include <sas_core/sas_clock.hpp>

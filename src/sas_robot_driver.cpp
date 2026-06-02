@@ -25,7 +25,12 @@
 #   1. Juan Jose Quiroz Omana (juanjose.quirozomana@manchester.ac.uk)
 #      Added the Watchdog functionality initially proposed in
 #      https://github.com/SmartArmStack/sas_core/pull/1
-*/
+#*/
+
+/**
+ * @file sas_robot_driver.cpp
+ * @brief Implementation of the RobotDriver base class and watchdog.
+ */
 
 
 #include <sas_core/sas_robot_driver.hpp>
