@@ -98,6 +98,15 @@ class ExampleRobotDriver(RobotDriver):
         self.joint_positions = target_joint_positions_rad
 
 def main():
+    """Example main demonstrating `ExampleRobotDriver`.
+
+    - Creates a `ShutdownSignaler`.
+    - Instantiates and uses `ExampleRobotDriver`: connect(), initialize(),
+      set target positions, set joint limits, deinitialize(), disconnect().
+
+    No parameters. Returns None.
+    """
+
     ss = ShutdownSignaler()
 
     robot = ExampleRobotDriver(ss)

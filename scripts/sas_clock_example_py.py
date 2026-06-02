@@ -22,6 +22,12 @@
 #
 # ################################################################
 
+"""Example: run a Clock-controlled loop and print timing statistics.
+
+Demonstrates creating a Clock with specified sampling time, looping with
+Clock.update_and_sleep(), and printing timing information.
+"""
+
 from sas_core import Clock, Statistics
 
 if __name__=='__main__':

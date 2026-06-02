@@ -21,6 +21,14 @@
 #   Author: Murilo M. Marinho, email: murilomarinho@ieee.org
 #
 # ################################################################
+
+"""Example: use Clock with SCHED_FIFO scheduling (requires privileges).
+
+Attempts to set realtime scheduling (SCHED_FIFO) and runs a 1 ms Clock loop
+to demonstrate low-latency timing. Requires appropriate permissions to set
+SCHED_FIFO (root or CAP_SYS_NICE); the script catches PermissionError.
+"""
+
 import os
 from sas_core import Clock, Statistics
 
