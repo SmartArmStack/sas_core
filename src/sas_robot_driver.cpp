@@ -202,9 +202,32 @@ void RobotDriver::check_for_watchdog_exceptions()
         std::rethrow_exception(watchdog_exception_);
 }
 
+/**
+ * @brief RobotDriver::set_control_loop_callback
+ * @param callback
+ */
 void RobotDriver::set_control_loop_callback(std::function<void ()> callback)
 {
     control_loop_callback_ = std::move(callback);
+}
+
+
+/**
+ * @brief RobotDriver::execute_control_loop_callback
+ */
+void RobotDriver::execute_control_loop_callback()
+{
+    if (control_loop_callback_)
+    {
+        try
+        {
+            control_loop_callback_();
+        }
+        catch (const std::exception& e)
+        {
+            throw std::runtime_error("Control loop callback exception: " + std::string(e.what()));
+        }
+    }
 }
 
 
