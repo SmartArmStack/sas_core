@@ -225,6 +225,13 @@ protected:
      * set by the concrete RobotDriver implementation.
      */
     void execute_control_loop_callback();
+
+
+    /**
+     * @brief Check if a control loop callback has been set
+     * @return true if a callback has been set, false otherwise
+     */
+    bool control_loop_callback_is_set();
 };
 }
 

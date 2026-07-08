@@ -206,7 +206,7 @@ void RobotDriver::check_for_watchdog_exceptions()
  * @brief RobotDriver::set_control_loop_callback
  * @param callback
  */
-void RobotDriver::set_control_loop_callback(std::function<void ()> callback)
+void RobotDriver::set_control_loop_callback(std::function<void()> callback)
 {
     control_loop_callback_ = std::move(callback);
 }
@@ -223,11 +223,20 @@ void RobotDriver::execute_control_loop_callback()
         {
             control_loop_callback_();
         }
-        catch (const std::exception& e)
+        catch(const std::exception& e)
         {
             throw std::runtime_error("Control loop callback exception: " + std::string(e.what()));
         }
     }
+}
+
+/**
+ * @brief Check if a control loop callback has been set
+ * @return true if a callback has been set, false otherwise
+ */
+bool RobotDriver::control_loop_callback_is_set()
+{
+    return static_cast<bool>(control_loop_callback_);
 }
 
 
