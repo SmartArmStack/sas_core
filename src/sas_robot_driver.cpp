@@ -213,7 +213,11 @@ void RobotDriver::set_control_loop_callback(std::function<void()> callback)
 
 
 /**
- * @brief RobotDriver::execute_control_loop_callback
+ * @brief Execute the control loop callback if it has been set
+ *
+ * This method should be called by RobotDriverROS or any other class
+ * that runs the control loop. It will execute the callback that was
+ * set by the concrete RobotDriver implementation.
  */
 void RobotDriver::execute_control_loop_callback()
 {
