@@ -85,6 +85,9 @@ protected:
     std::exception_ptr watchdog_exception_{nullptr};
     std::mutex watchdog_exception_mutex_;
 
+    //std::shared_ptr<std::function<void()>> control_loop_callback_;
+    std::function<void()> control_loop_callback_;
+
     public:
     /**
      * @brief Enumeration of optional driver functionalities
@@ -204,6 +207,14 @@ protected:
      * @brief Deinitialize the driver resources
      */
     virtual void deinitialize()=0;
+
+
+    /**
+     * @brief Set the control loop callback function
+     * @param callback The callback function to be executed in the control loop
+     *
+     */
+    void set_control_loop_callback(std::function<void()> callback);
 };
 }
 
