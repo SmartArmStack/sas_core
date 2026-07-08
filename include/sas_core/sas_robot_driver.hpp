@@ -85,6 +85,9 @@ protected:
     std::exception_ptr watchdog_exception_{nullptr};
     std::mutex watchdog_exception_mutex_;
 
+
+    std::function<void()> control_loop_callback_;
+
     public:
     /**
      * @brief Enumeration of optional driver functionalities
@@ -204,6 +207,31 @@ protected:
      * @brief Deinitialize the driver resources
      */
     virtual void deinitialize()=0;
+
+
+    /**
+     * @brief Set the control loop callback function
+     * @param callback The callback function to be executed in the control loop
+     *
+     */
+    void set_control_loop_callback(std::function<void()> callback);
+
+
+    /**
+     * @brief Execute the control loop callback if it has been set
+     *
+     * This method should be called by RobotDriverROS or any other class
+     * that runs the control loop. It will execute the callback that was
+     * set by the concrete RobotDriver implementation.
+     */
+    void execute_control_loop_callback();
+
+
+    /**
+     * @brief Check if a control loop callback has been set
+     * @return true if a callback has been set, false otherwise
+     */
+    bool control_loop_callback_is_set();
 };
 }
 
