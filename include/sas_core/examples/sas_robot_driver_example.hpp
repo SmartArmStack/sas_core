@@ -1,5 +1,5 @@
 /*
-# Copyright (c) 2016-2023 Murilo Marques Marinho
+# Copyright (c) 2016-2026 Murilo Marques Marinho
 #
 #    This file is part of sas_core.
 #
@@ -31,6 +31,7 @@
  */
 #pragma once
 
+#include <sas_core/sas_shutdown_signaler.hpp>
 #include <sas_core/sas_robot_driver.hpp>
 #include <eigen3/Eigen/Dense>
 
@@ -73,6 +74,8 @@ public:
      * @param configuration Example configuration (name, initial positions, joint limits)
      * @param break_loops Optional pointer to an atomic_bool used to break loops
      */
+    RobotDriverExample(const RobotDriverExampleConfiguration& configuration, const std::shared_ptr<ShutdownSignaler>& shutdown_signaler_);
+    [[deprecated("Use RobotDriverExample(const RobotDriverExampleConfiguration& configuration, const std::shared_ptr<ShutdownSignaler>& shutdown_signaler_) instead.")]]
     RobotDriverExample(const RobotDriverExampleConfiguration& configuration, std::atomic_bool* break_loops);
 
     /**

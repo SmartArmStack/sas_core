@@ -1,5 +1,5 @@
 /*
-# Copyright (c) 2016-2023 Murilo Marques Marinho
+# Copyright (c) 2016-2026 Murilo Marques Marinho
 #
 #    This file is part of sas_core.
 #
@@ -31,6 +31,13 @@
 
 sas::RobotDriverExample::RobotDriverExample(const RobotDriverExampleConfiguration &configuration, std::atomic_bool *break_loops):
     RobotDriver(break_loops),
+    configuration_(configuration)
+{
+    set_joint_limits(configuration.joint_limits);
+}
+
+sas::RobotDriverExample::RobotDriverExample(const RobotDriverExampleConfiguration& configuration, const std::shared_ptr<ShutdownSignaler>& shutdown_signaler_):
+    RobotDriver(shutdown_signaler_),
     configuration_(configuration)
 {
     set_joint_limits(configuration.joint_limits);

@@ -1,5 +1,5 @@
 /*
-# Copyright (c) 2016-2023 Murilo Marques Marinho
+# Copyright (c) 2016-2026 Murilo Marques Marinho
 #
 #    This file is part of sas_core.
 #
@@ -30,10 +30,10 @@
 #include <iostream>
 
 #include<signal.h>
-static std::atomic_bool kill_this_process(false);
+static std::shared_ptr<sas::ShutdownSignaler> shutdown_signaler = std::make_shared<sas::ShutdownSignaler>();
 void sig_int_handler(int)
 {
-    kill_this_process = true;
+    shutdown_signaler->shutdown();
 }
 
 int main(int,char**)
@@ -47,7 +47,7 @@ int main(int,char**)
     configuration.name = "Example_Robot_123";
     configuration.initial_joint_positions = VectorXd::Random(7);
 
-    auto robot_driver_example = sas::RobotDriverExample(configuration,&kill_this_process);
+    auto robot_driver_example = sas::RobotDriverExample(configuration, shutdown_signaler);
 
     robot_driver_example.connect();
     robot_driver_example.initialize();
