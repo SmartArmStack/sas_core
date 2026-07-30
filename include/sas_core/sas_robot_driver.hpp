@@ -105,7 +105,7 @@ protected:
     /**
      * @brief Virtual destructor for RobotDriver
      */
-    ~RobotDriver();
+    virtual ~RobotDriver();
 
     /**
      * @brief Get current joint positions
