@@ -36,7 +36,7 @@ namespace sas
 
     bool ShutdownSignaler::should_shutdown()
     {
-        if(external_shutdown_signal_)
+        if(external_shutdown_signal_ != nullptr)
         {
             return *external_shutdown_signal_;
         }
@@ -45,7 +45,7 @@ namespace sas
     }
     void ShutdownSignaler::shutdown()
     {
-        if(external_shutdown_signal_)
+        if(external_shutdown_signal_ != nullptr)
         {
             *external_shutdown_signal_ = true;
         }
