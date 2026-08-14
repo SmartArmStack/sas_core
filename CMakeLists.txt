@@ -18,33 +18,18 @@ add_subdirectory(pybind11)
 find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 
-##### CPP LIBRARY #####
+##############################
+# Pure C++ library (src/)     #
+##############################
+add_subdirectory(src)
 
-add_library(${PROJECT_NAME} SHARED
-    src/sas_clock.cpp
-    src/sas_core.cpp
-    src/sas_object.cpp
-    src/sas_shutdown_signaler.cpp
-    # sas_robot_driver
-    src/sas_robot_driver.cpp
-    src/examples/sas_robot_driver_example.cpp
-    src/eigen3_std_conversions.cpp
-    )
-
-ament_target_dependencies(${PROJECT_NAME} Eigen3)
-
-target_include_directories(${PROJECT_NAME}
-    PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
+# INTERFACE alias so external ROS packages can still link against `sas_core`.
+# All symbols come from sas_core_pure transitively.
+add_library(sas_core INTERFACE)
+target_link_libraries(sas_core INTERFACE sas_core_pure)
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(Eigen3)
-
-target_link_libraries(${PROJECT_NAME}
-    -ldqrobotics
-    Eigen3::Eigen
-    )
 
 install(
     DIRECTORY include/
@@ -52,81 +37,64 @@ install(
     )
 
 install(
-    TARGETS ${PROJECT_NAME}
+    TARGETS sas_core sas_core_pure
     EXPORT export_${PROJECT_NAME}
-    LIBRARY DESTINATION lib
-    #ARCHIVE DESTINATION lib
-    RUNTIME DESTINATION bin
+    ARCHIVE DESTINATION lib
     INCLUDES DESTINATION include
     )
 
-##END## CPP LIBRARY #####
-
-##### CPP BINARY #####
-
+##############################
+# Binaries                    #
+##############################
 add_executable(sas_core_example
     src/examples/sas_core_example.cpp)
 
 target_link_libraries(sas_core_example
     -ldqrobotics
-    ${PROJECT_NAME}
+    sas_core_pure
     )
 
 install(TARGETS
     sas_core_example
     DESTINATION lib/${PROJECT_NAME})
 
-##END## CPP BINARY #####
-
-##### CPP BINARY #####
-
 add_executable(sas_clock_example
     src/examples/sas_clock_example.cpp)
 
 target_link_libraries(sas_clock_example
-    ${PROJECT_NAME}
+    sas_core_pure
     )
 
 install(TARGETS
     sas_clock_example
     DESTINATION lib/${PROJECT_NAME})
 
-##END## CPP BINARY #####
-
-##### CPP BINARY #####
-
 add_executable(sas_clock_sched_fifo_example
     src/examples/sas_clock_sched_fifo_example.cpp)
 
 target_link_libraries(sas_clock_sched_fifo_example
-    ${PROJECT_NAME}
+    sas_core_pure
     )
 
 install(TARGETS
     sas_clock_sched_fifo_example
     DESTINATION lib/${PROJECT_NAME})
 
-##END## CPP BINARY #####
-
-##### CPP BINARY #####
-
 add_executable(sas_robot_driver_example
     src/examples/sas_robot_driver_example_main.cpp)
 
 target_link_libraries(sas_robot_driver_example
-    ${PROJECT_NAME}
+    sas_core_pure
     )
 
 install(TARGETS
     sas_robot_driver_example
     DESTINATION lib/${PROJECT_NAME})
 
-##END## CPP BINARY #####
-
-##### PYBIND11 LIBRARY #####
-
+##############################
+# Pybind11                    #
+##############################
 ament_python_install_package(${PROJECT_NAME})
-
 
 pybind11_add_module(_${PROJECT_NAME} SHARED
     src/sas_core_py.cpp
@@ -139,23 +107,20 @@ target_include_directories(_${PROJECT_NAME}
     $<INSTALL_INTERFACE:include>)
 
 target_compile_definitions(_${PROJECT_NAME} PRIVATE IS_SAS_PYTHON_BUILD)
-# https://github.com/pybind/pybind11/issues/387
-target_link_libraries(_${PROJECT_NAME} PRIVATE ${PROJECT_NAME} -ldqrobotics)
+target_link_libraries(_${PROJECT_NAME} PRIVATE sas_core_pure -ldqrobotics)
 
 install(TARGETS _${PROJECT_NAME}
   DESTINATION "${PYTHON_INSTALL_DIR}/${PROJECT_NAME}"
 )
 
-##END## PYBIND11 LIBRARY #####
-
-# According to https://github.com/SmartArmStack/sas_datalogger/blob/78ac681f9cb049c5b9715d215f163565f16b5cdc/CMakeLists.txt
-##### PYTHON EXECUTABLES #####
+##############################
+# Python executables          #
+##############################
 install(PROGRAMS
   scripts/sas_clock_example_py.py
   scripts/sas_robot_driver_subclass_example_py.py
   scripts/sas_clock_sched_fifo_example_py.py
   DESTINATION lib/${PROJECT_NAME}
 )
-##END## PYTHON EXECUTABLES #####
 
 ament_package()

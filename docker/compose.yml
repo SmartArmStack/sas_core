@@ -1,8 +1,8 @@
 services:
   sas_core:
-    build: .
-    volumes:
-      - ../../sas_core:/root/sas_core_devel/src/sas_core
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     environment:
       PYTHONUNBUFFERED: 1
     command: /bin/bash -c "
