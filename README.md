@@ -45,18 +45,18 @@ include(FetchContent)
 FetchContent_Declare(
     sas_core
     GIT_REPOSITORY https://github.com/SmartArmStack/sas_core.git
-    GIT_TAG        <tag-or-branch>
+    GIT_TAG        jazzy
 )
 FetchContent_MakeAvailable(sas_core)
 
 target_link_libraries(your_target PRIVATE sas_core_pure)
 ```
 
-Pass `-DROS2_BUILD=OFF` when configuring the project if your toolchain does not
-provide ament:
+The `ROS2_BUILD` option defaults to `ON`. Disable it before calling
+`FetchContent_MakeAvailable` if your toolchain does not provide ament:
 
-```bash
-cmake -B build -DROS2_BUILD=OFF
+```cmake
+set(ROS2_BUILD OFF CACHE BOOL "" FORCE)
 ```
 
 The library depends on **Eigen3** and **dqrobotics**; make sure both are
