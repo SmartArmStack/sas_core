@@ -19,17 +19,21 @@ find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 
 ##############################
-# Pure C++ library (src/)     #
+# Pure C++ library            #
 ##############################
-add_subdirectory(src)
+include(cmake/sas_core_pure.cmake)
 
 # INTERFACE alias so external ROS packages can still link against `sas_core`.
 # All symbols come from sas_core_pure transitively.
 add_library(sas_core INTERFACE)
 target_link_libraries(sas_core INTERFACE sas_core_pure)
+target_include_directories(sas_core INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>)
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(Eigen3)
+ament_export_include_directories(include)
 
 install(
     DIRECTORY include/
