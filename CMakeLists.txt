@@ -51,10 +51,9 @@ if(ROS2_BUILD)
     target_link_libraries(sas_robot_driver_example sas_core_pure)
     install(TARGETS sas_robot_driver_example DESTINATION lib/${PROJECT_NAME})
 
-    install(PROGRAMS
-        scripts/sas_clock_example_py.py
-        scripts/sas_robot_driver_subclass_example_py.py
-        scripts/sas_clock_sched_fifo_example_py.py
+    install(DIRECTORY
+        scripts/
+        FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
         DESTINATION lib/${PROJECT_NAME}
     )
 
