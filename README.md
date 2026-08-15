@@ -11,6 +11,27 @@
 - `scripts/` — example Python scripts.
 - `src/examples/` — C++ example programs and test nodes.
 
+## Using as a non-ROS2 dependency (CMake FetchContent)
+
+To include `sas_core_pure` in a plain CMake project (no ROS2/ament required):
+
+```cmake
+include(FetchContent)
+FetchContent_Declare(
+    sas_core
+    GIT_REPOSITORY https://github.com/SmartArmStack/sas_core.git
+    GIT_TAG        jazzy
+)
+
+set(ROS2_BUILD OFF CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(sas_core)
+
+target_link_libraries(your_target PRIVATE sas_core_pure)
+```
+
+The library depends on **Eigen3** and **dqrobotics**; make sure both are
+available on your system.
+
 ## Examples
 
 Testing on a docker container.
@@ -36,28 +57,3 @@ The `scripts/sas_robot_driver_subclass_example_py.py` file demonstrates how to
 subclass `sas_core.RobotDriver` in Python and contains a minimal working
 example.
 
-## Using as a non-ROS2 dependency (CMake FetchContent)
-
-To include `sas_core_pure` in a plain CMake project (no ROS2/ament required):
-
-```cmake
-include(FetchContent)
-FetchContent_Declare(
-    sas_core
-    GIT_REPOSITORY https://github.com/SmartArmStack/sas_core.git
-    GIT_TAG        jazzy
-)
-FetchContent_MakeAvailable(sas_core)
-
-target_link_libraries(your_target PRIVATE sas_core_pure)
-```
-
-The `ROS2_BUILD` option defaults to `ON`. Disable it before calling
-`FetchContent_MakeAvailable` if your toolchain does not provide ament:
-
-```cmake
-set(ROS2_BUILD OFF CACHE BOOL "" FORCE)
-```
-
-The library depends on **Eigen3** and **dqrobotics**; make sure both are
-available on your system.
