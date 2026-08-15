@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.11)
 project(sas_core)
 
 option(ROS2_BUILD "Enable ROS2/ament build (examples + ament integration)" ON)
