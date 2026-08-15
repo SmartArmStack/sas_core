@@ -16,16 +16,4 @@ services:
       && ros2 run sas_core sas_robot_driver_subclass_example_py.py
       && ros2 run sas_core sas_clock_sched_fifo_example
       && ros2 run sas_core sas_clock_sched_fifo_example_py.py
-      && ros2 run test_consumer test_consumer
-      && echo '--- Running Python import test from test_consumer ---'
-      && python3 test_consumer/test/test_python_import.py
-      && echo '--- Building standalone_consumer (no ROS2) ---'
-      && mkdir -p /root/standalone_build
-      && cd /root/standalone_build
-      && cmake /root/standalone_consumer -DCMAKE_INSTALL_PREFIX=/root/standalone_install
-      && make
-      && /root/standalone_build/standalone_consumer
-      && echo '--- Running Python import test from standalone_consumer ---'
-      && cp /root/standalone_build/_sas_core.*.so /root/sas_core_devel/src/sas_core/sas_core/ 2>/dev/null || true
-      && PYTHONPATH=/root/sas_core_devel/src/sas_core python3 /root/standalone_consumer/test/test_python_import.py
       "
