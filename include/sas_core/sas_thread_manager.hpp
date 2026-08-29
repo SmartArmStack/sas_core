@@ -1,4 +1,3 @@
-#pragma once
 /*
 # Copyright (c) 2022-2026 Murilo Marques Marinho
 #
