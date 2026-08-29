@@ -23,6 +23,7 @@
 # ################################################################*/
 
 #pragma once
+#include <sas_core/sas_core.hpp>
 #include <sas_core/sas_clock.hpp>
 #include <functional>
 #include <thread>
@@ -34,14 +35,34 @@ namespace sas
 
 class thread_manager
 {
+public:
+    // PRIORITY levels
+    enum class PRIORITY {
+        LOWEST = 0,
+        BACKGROUND = 10,
+        NORMAL = 50,
+        HIGH = 80,
+        REALTIME = 90,
+        CRITICAL = 99
+    };
+
+
+
+private:
+    // Thread optimization parameters
+    PRIORITY priority_{PRIORITY::NORMAL};
+    int cpu_core_{-1};
+    void apply_priority();
+    void apply_cpu_affinity();
+
 
 protected:
     sas::Clock clock_;
     std::function<void()> loop_callback_;
     std::thread thread_;
     std::string thread_name_;
-    std::atomic<bool> running_;         ///< Thread running state
-    std::atomic<bool> stop_requested_;  ///< Stop request flag
+    std::atomic<bool> running_{false};
+    std::atomic<bool> stop_requested_{false};
 
 protected:
     void run();
@@ -55,12 +76,34 @@ public:
 
     thread_manager(const std::string& thread_name,
                    const double& period,
-                   std::function<void()> callback);
+                   std::function<void()> callback,
+                   PRIORITY priority = PRIORITY::NORMAL,
+                   int cpu_core = -1);
 
+
+
+    // Performance monitoring using sas::Clock
+    double get_computation_time() const;
+    double get_sleep_time() const;
+    double get_effective_sampling_time() const;
+    double get_elapsed_time_sec() const;
+    long   get_overrun_count() const;
+
+    // Statistics from sas::Clock
+    double get_statistics(const Statistics& statistics,
+                          const sas::Clock::TimeType& time_type) const;
+
+    // Lifecycle
     void start();
     void stop();
     bool is_running() const;
+
+
+    // Getters
     std::string get_thread_name() const;
+    PRIORITY get_priority() const;
+    int get_cpu_core() const;
+    double get_period() const;
 };
 
 }
