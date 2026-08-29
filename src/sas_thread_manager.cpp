@@ -22,12 +22,15 @@
 #
 # ################################################################*/
 
+#include <iostream>
 #include <sas_core/sas_thread_manager.hpp>
 #include <stdexcept>
 #include <cstring>
 
 #ifdef __linux__
 #include <pthread.h>
+#include <sched.h>
+#include <sys/resource.h>
 #endif
 
 namespace sas
@@ -41,16 +44,46 @@ namespace sas
  */
 thread_manager::thread_manager(const std::string& thread_name,
                                const double& period,
-                               std::function<void()> callback)
-    :clock_{period},
+                               std::function<void()> callback,
+                               PRIORITY priority,
+                               int cpu_core)
+    :priority_{priority},
+    cpu_core_{cpu_core},
+    clock_{period},
     loop_callback_{std::move(callback)},
-    thread_name_{thread_name},
-    running_{false},
-    stop_requested_{false}
+    thread_name_{thread_name}
 {
     if (period <= 0.0) {
         throw std::invalid_argument("thread_manager: period must be positive");
     }
+}
+
+/**
+ * @brief Get the CPU core that this thread is pinned to.
+ * @return CPU core number, or -1 if no affinity is set.
+ */
+int thread_manager::get_cpu_core() const
+{
+    return cpu_core_;
+}
+
+/**
+ * @brief Get the desired loop period (sampling time).
+ * @return Period in seconds.
+ * @details Returns the target period configured at construction time.
+ */
+double thread_manager::get_period() const
+{
+    return clock_.get_desired_thread_sampling_time_sec();
+}
+
+/**
+ * @brief Get the priority level of this thread.
+ * @return The PRIORITY enum value.
+ */
+thread_manager::PRIORITY thread_manager::get_priority() const
+{
+    return priority_;
 }
 
 /**
@@ -121,6 +154,11 @@ std::string thread_manager::get_thread_name() const
  */
 void thread_manager::run()
 {
+    // Apply thread optimizations
+    apply_priority();
+    apply_cpu_affinity();
+
+
     // Set thread name (if supported by platform)
 #ifdef __linux__
     // pthread_setname_np has a 16 character limit (including null terminator)
@@ -137,9 +175,218 @@ void thread_manager::run()
         if (loop_callback_) {
             loop_callback_();
         }
-        // Wait for next cycle
-        clock_.update_and_sleep();;
+        clock_.update_and_sleep();
     }
+}
+
+/**
+ * @brief Apply the configured priority and scheduling policy to the thread.
+ *
+ * This method sets the thread's scheduling priority and policy based on the
+ * PRIORITY enum value configured at construction time. It uses Linux's
+ * pthread_setschedparam API to apply the settings.
+ *
+ * @details The method maps the abstract PRIORITY levels to specific Linux
+ *          scheduler policies and priority values:
+ *
+ * | PRIORITY Level   | Linux Policy | Priority Value | Description |
+ * |------------------|--------------|----------------|-------------|
+ * | LOWEST           | SCHED_OTHER  | 0 (nice 19)    | Low priority background tasks |
+ * | BACKGROUND       | SCHED_OTHER  | 0 (nice 10)    | Background processing |
+ * | NORMAL           | SCHED_OTHER  | 0 (nice 0)     | Standard scheduling |
+ * | HIGH             | SCHED_RR     | 80             | Round-robin real-time |
+ * | REALTIME         | SCHED_FIFO   | 90             | FIFO real-time |
+ * | CRITICAL         | SCHED_FIFO   | 99             | Highest priority (max) |
+ *
+ * @note This method is only available on Linux systems.
+ * @note Real-time policies (SCHED_RR and SCHED_FIFO) require root privileges
+ *       or the CAP_SYS_NICE capability.
+ * @note This method should be called from within the thread context (after
+ *       the thread has started).
+ *
+ * @warning Real-time priorities (HIGH, REALTIME, CRITICAL) can starve other
+ *          threads if not used carefully. Only use them for time-critical tasks.
+ * @warning This method does NOT throw exceptions on failure; it only prints
+ *          a warning to std::cerr.
+ *
+ * @see PRIORITY - Enum definition for priority levels
+ * @see apply_cpu_affinity() - Related thread optimization method
+ * @see start() - The method that triggers the priority application
+ *
+ * @code
+ * // Create a critical real-time thread
+ * thread_manager control(
+ *     "Control",
+ *     0.001,
+ *     []() { compute_control(); },
+ *     PRIORITY::CRITICAL,  // Will use SCHED_FIFO with priority 99
+ *     2                    // Pin to core 2
+ * );
+ * control.start();  // Priority and affinity are applied in run()
+ * @endcode
+ */
+void thread_manager::apply_priority() {
+#ifdef __linux__
+    pthread_t thread_handle = thread_.native_handle();
+    struct sched_param param = {0};
+    int policy;
+
+    // Map to Linux scheduling
+    switch (priority_) {
+    case PRIORITY::LOWEST:
+        policy = SCHED_OTHER;
+        param.sched_priority = 0;
+        setpriority(PRIO_PROCESS, pthread_self(), 19);
+        break;
+    case PRIORITY::BACKGROUND:
+        policy = SCHED_OTHER;
+        param.sched_priority = 0;
+        setpriority(PRIO_PROCESS, pthread_self(), 10);
+        break;
+    case PRIORITY::NORMAL:
+        policy = SCHED_OTHER;
+        param.sched_priority = 0;
+        setpriority(PRIO_PROCESS, pthread_self(), 0);
+        break;
+    case PRIORITY::HIGH:
+        policy = SCHED_RR;
+        param.sched_priority = 80;
+        break;
+    case PRIORITY::REALTIME:
+        policy = SCHED_FIFO;
+        param.sched_priority = 90;
+        break;
+    case PRIORITY::CRITICAL:
+        policy = SCHED_FIFO;
+        param.sched_priority = 99;
+        break;
+    }
+
+    if (pthread_setschedparam(thread_handle, policy, &param) != 0) {
+        std::cerr << "Warning: Failed to set priority for thread '"
+                  << thread_name_ << "'" << std::endl;
+    }
+#endif
+}
+
+
+/**
+ * @brief Apply CPU core affinity to the thread.
+ *
+ * This method pins the thread to a specific CPU core to improve cache locality,
+ * reduce context switching, and ensure predictable performance for real-time
+ * applications.
+ *
+ * @details The method uses the Linux pthread_setaffinity_np API to bind the
+ *          thread to the CPU core specified by cpu_core_. This is particularly
+ *          important for:
+ *          - Real-time control loops that need deterministic timing
+ *          - High-frequency communication threads (UDP, CAN, etc.)
+ *          - Threads that benefit from dedicated cache resources
+ *
+ * @note This method is only available on Linux systems.
+ * @note If cpu_core_ is negative (< 0), affinity is not applied and the
+ *       thread can run on any available CPU core.
+ * @note This method should be called from within the thread context (after
+ *       the thread has started).
+ *
+ * @warning Setting CPU affinity can degrade performance if the specified core
+ *          becomes overloaded. Use with caution in multi-threaded systems.
+ * @warning Thread must be joinable and running when this method is called.
+ *
+ * @see set_cpu_affinity() - Setter for the cpu_core_ member
+ * @see apply_priority() - Related thread optimization method
+ *
+ * @code
+ * // Pin control thread to CPU core 2
+ * thread_manager control("Control", 0.001, []() {
+ *     compute_control();
+ * }, PRIORITY::REALTIME, 2);
+ *
+ * // Thread will be pinned to core 2 when start() is called
+ * control.start();
+ * @endcode
+ */
+void thread_manager::apply_cpu_affinity() {
+#ifdef __linux__
+    if (cpu_core_ < 0) return;
+
+    cpu_set_t cpuset;
+    CPU_ZERO(&cpuset);
+    CPU_SET(cpu_core_, &cpuset);
+
+    pthread_t thread_handle = thread_.native_handle();
+    if (pthread_setaffinity_np(thread_handle, sizeof(cpu_set_t), &cpuset) != 0) {
+        std::cerr << "Warning: Failed to set CPU affinity for thread '"
+                  << thread_name_ << "' to core " << cpu_core_ << std::endl;
+    }
+#endif
+}
+
+
+
+/**
+ * @brief Get the computation time of the most recent loop iteration.
+ * @return Computation time in seconds.
+ * @details Measures the time spent executing the callback function
+ *          (between sleep end and next sleep start).
+ */
+double thread_manager::get_computation_time() const
+{
+    return clock_.get_time(sas::Clock::TimeType::Computational);
+}
+
+/**
+ * @brief Get the sleep/idle time of the most recent loop iteration.
+ * @return Sleep time in seconds.
+ * @details Measures the time spent sleeping between callback executions.
+ */
+double thread_manager::get_sleep_time() const
+{
+    return clock_.get_time(sas::Clock::TimeType::Idle);
+}
+
+/**
+ * @brief Get the effective sampling time of the most recent loop iteration.
+ * @return Effective sampling time in seconds.
+ * @details Total elapsed time from one loop iteration to the next
+ *          (computation_time + sleep_time).
+ */
+double thread_manager::get_effective_sampling_time() const
+{
+    return clock_.get_time(sas::Clock::TimeType::EffectiveSampling);
+}
+
+/**
+ * @brief Get the total elapsed time since clock initialization.
+ * @return Elapsed time in seconds.
+ */
+double thread_manager::get_elapsed_time_sec() const
+{
+    return clock_.get_elapsed_time_sec();
+}
+
+/**
+ * @brief Get the number of times the loop has overrun its target period.
+ * @return Overrun count.
+ * @details Incremented when the loop takes longer than the configured period.
+ */
+long thread_manager::get_overrun_count() const
+{
+    return clock_.get_overrun_count();
+}
+
+/**
+ * @brief Get statistical metrics for a specific time type.
+ * @param statistics The statistic to retrieve (e.g., Mean, Max, Min, StdDev).
+ * @param time_type The time type to analyze (Computational, Idle, EffectiveSampling).
+ * @return The requested statistic value in seconds.
+ * @throws std::runtime_error if statistics were not enabled at construction.
+ */
+double thread_manager::get_statistics(const Statistics& statistics,
+                                      const sas::Clock::TimeType& time_type) const
+{
+    return clock_.get_statistics(statistics, time_type);
 }
 
 
