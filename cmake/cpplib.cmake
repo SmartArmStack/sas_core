@@ -10,6 +10,7 @@ target_sources(sas_core_pure PRIVATE
     ${CMAKE_CURRENT_LIST_DIR}/../src/sas_robot_driver.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../src/examples/sas_robot_driver_example.cpp
     ${CMAKE_CURRENT_LIST_DIR}/../src/eigen3_std_conversions.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/../src/sas_thread_manager.cpp
 )
 
 set_target_properties(sas_core_pure PROPERTIES
