@@ -38,9 +38,52 @@ namespace sas
 
 /**
  * @brief Constructor for thread_manager
- * @param thread_name Name of the thread for identification
- * @param period Period in seconds between callback executions
- * @param callback Function to call periodically
+ *
+ * Creates a thread manager that executes a callback function periodically
+ * with configurable priority and CPU affinity.
+ *
+ * @param thread_name Name of the thread for identification and debugging.
+ *                    On Linux, names are truncated to 15 characters.
+ * @param period Period in seconds between callback executions.
+ *               Must be greater than 0.0.
+ * @param callback Function to call periodically. The callback should be
+ *                 thread-safe and should not block for extended periods
+ *                 to avoid missing deadlines.
+ * @param priority Thread priority level (default: PRIORITY::NORMAL).
+ *                 Higher priorities get more CPU time:
+ *                 - LOWEST (0): SCHED_OTHER, nice 19
+ *                 - BACKGROUND (10): SCHED_OTHER, nice 10
+ *                 - NORMAL (50): SCHED_OTHER, nice 0
+ *                 - HIGH (80): SCHED_RR, priority 80 (requires root)
+ *                 - REALTIME (90): SCHED_FIFO, priority 90 (requires root)
+ *                 - CRITICAL (99): SCHED_FIFO, priority 99 (requires root)
+ * @param cpu_core CPU core to pin the thread to (-1 = no affinity, default).
+ *                 Pinning to a specific core improves cache locality and
+ *                 reduces context switching for real-time applications.
+ *
+ * @throws std::invalid_argument if period <= 0.0.
+ *
+ * @note Real-time priorities (HIGH, REALTIME, CRITICAL) require root
+ *       privileges or CAP_SYS_NICE capability.
+ *
+ * @see PRIORITY
+ * @see start()
+ * @see apply_priority()
+ * @see apply_cpu_affinity()
+ *
+ * @code
+ * // Create a normal priority thread with no CPU affinity
+ * thread_manager worker("Worker", 0.01, []() { do_work(); });
+ *
+ * // Create a real-time thread pinned to CPU core 2
+ * thread_manager control(
+ *     "Control",
+ *     0.001,
+ *     []() { compute_control(); },
+ *     thread_manager::PRIORITY::CRITICAL,
+ *     2
+ * );
+ * @endcode
  */
 thread_manager::thread_manager(const std::string& thread_name,
                                const double& period,
