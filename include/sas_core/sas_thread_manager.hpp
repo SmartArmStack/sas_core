@@ -47,14 +47,16 @@ protected:
 protected:
     void run();
 public:
+    ~thread_manager();
+
     thread_manager(const thread_manager&) = delete;            // Copy constructor
     thread_manager& operator=(const thread_manager&) = delete; // Copy assignment
     thread_manager(thread_manager&&) = delete;                 // Move constructor
     thread_manager& operator=(thread_manager&&) = delete;      // Move assignment
 
-    thread_manager(const std::string& thread_name, const double& period,
-                       std::function<void()> callback);
-    ~thread_manager();
+    thread_manager(const std::string& thread_name,
+                   const double& period,
+                   std::function<void()> callback);
 
     void start();
     void stop();
