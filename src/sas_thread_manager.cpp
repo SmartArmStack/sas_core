@@ -37,7 +37,7 @@ namespace sas
 {
 
 /**
- * @brief Constructor for thread_manager
+ * @brief Constructor for ThreadManager
  *
  * Creates a thread manager that executes a callback function periodically
  * with configurable priority and CPU affinity.
@@ -73,19 +73,19 @@ namespace sas
  *
  * @code
  * // Create a normal priority thread with no CPU affinity
- * thread_manager worker("Worker", 0.01, []() { do_work(); });
+ * ThreadManager worker("Worker", 0.01, []() { do_work(); });
  *
  * // Create a real-time thread pinned to CPU core 2
- * thread_manager control(
+ * ThreadManager control(
  *     "Control",
  *     0.001,
  *     []() { compute_control(); },
- *     thread_manager::PRIORITY::CRITICAL,
+ *     ThreadManager::PRIORITY::CRITICAL,
  *     2
  * );
  * @endcode
  */
-thread_manager::thread_manager(const std::string& thread_name,
+ThreadManager::ThreadManager(const std::string& thread_name,
                                const double& period,
                                std::function<void()> callback,
                                PRIORITY priority,
@@ -97,7 +97,7 @@ thread_manager::thread_manager(const std::string& thread_name,
     thread_name_{thread_name}
 {
     if (period <= 0.0) {
-        throw std::invalid_argument("thread_manager: period must be positive");
+        throw std::invalid_argument("ThreadManager: period must be positive");
     }
 }
 
@@ -105,7 +105,7 @@ thread_manager::thread_manager(const std::string& thread_name,
  * @brief Get the CPU core that this thread is pinned to.
  * @return CPU core number, or -1 if no affinity is set.
  */
-int thread_manager::get_cpu_core() const
+int ThreadManager::get_cpu_core() const
 {
     return cpu_core_;
 }
@@ -115,7 +115,7 @@ int thread_manager::get_cpu_core() const
  * @return Period in seconds.
  * @details Returns the target period configured at construction time.
  */
-double thread_manager::get_period() const
+double ThreadManager::get_period() const
 {
     return clock_.get_desired_thread_sampling_time_sec();
 }
@@ -124,15 +124,15 @@ double thread_manager::get_period() const
  * @brief Get the priority level of this thread.
  * @return The PRIORITY enum value.
  */
-thread_manager::PRIORITY thread_manager::get_priority() const
+ThreadManager::PRIORITY ThreadManager::get_priority() const
 {
     return priority_;
 }
 
 /**
- * @brief thread_manager::~thread_manager destructor of the class
+ * @brief ThreadManager::~ThreadManager destructor of the class
  */
-thread_manager::~thread_manager()
+ThreadManager::~ThreadManager()
 {
     stop();
 }
@@ -141,7 +141,7 @@ thread_manager::~thread_manager()
 /**
  * @brief Start the thread execution
  */
-void thread_manager::start()
+void ThreadManager::start()
 {
     // Atomically set running_ to true and get the previous value.
     if (running_.exchange(true)) {
@@ -152,13 +152,13 @@ void thread_manager::start()
 
     stop_requested_ = false;
     clock_.init();
-    thread_ = std::thread(&thread_manager::run, this);
+    thread_ = std::thread(&ThreadManager::run, this);
 }
 
 /**
  * @brief Stop the thread execution and wait for completion
  */
-void thread_manager::stop()
+void ThreadManager::stop()
 {
     if (!running_.exchange(false)) {
         return; // Not running
@@ -175,7 +175,7 @@ void thread_manager::stop()
  * @brief Check if the thread is currently running
  * @return true if running, false otherwise
  */
-bool thread_manager::is_running() const
+bool ThreadManager::is_running() const
 {
     // Returns the current value of running_ in thread-safe way.
     return running_.load();
@@ -186,7 +186,7 @@ bool thread_manager::is_running() const
  * @brief Get the thread name
  * @return Thread name string
  */
-std::string thread_manager::get_thread_name() const
+std::string ThreadManager::get_thread_name() const
 {
     return thread_name_;
 }
@@ -195,7 +195,7 @@ std::string thread_manager::get_thread_name() const
 /**
  * @brief Main thread entry function
  */
-void thread_manager::run()
+void ThreadManager::run()
 {
     // Apply thread optimizations
     apply_priority();
@@ -258,7 +258,7 @@ void thread_manager::run()
  *
  * @code
  * // Create a critical real-time thread
- * thread_manager control(
+ * ThreadManager control(
  *     "Control",
  *     0.001,
  *     []() { compute_control(); },
@@ -268,7 +268,7 @@ void thread_manager::run()
  * control.start();  // Priority and affinity are applied in run()
  * @endcode
  */
-void thread_manager::apply_priority() {
+void ThreadManager::apply_priority() {
 #ifdef __linux__
     pthread_t thread_handle = thread_.native_handle();
     struct sched_param param = {0};
@@ -342,7 +342,7 @@ void thread_manager::apply_priority() {
  *
  * @code
  * // Pin control thread to CPU core 2
- * thread_manager control("Control", 0.001, []() {
+ * ThreadManager control("Control", 0.001, []() {
  *     compute_control();
  * }, PRIORITY::REALTIME, 2);
  *
@@ -350,7 +350,7 @@ void thread_manager::apply_priority() {
  * control.start();
  * @endcode
  */
-void thread_manager::apply_cpu_affinity() {
+void ThreadManager::apply_cpu_affinity() {
 #ifdef __linux__
     if (cpu_core_ < 0) return;
 
@@ -374,7 +374,7 @@ void thread_manager::apply_cpu_affinity() {
  * @details Measures the time spent executing the callback function
  *          (between sleep end and next sleep start).
  */
-double thread_manager::get_computation_time() const
+double ThreadManager::get_computation_time() const
 {
     return clock_.get_time(sas::Clock::TimeType::Computational);
 }
@@ -384,7 +384,7 @@ double thread_manager::get_computation_time() const
  * @return Sleep time in seconds.
  * @details Measures the time spent sleeping between callback executions.
  */
-double thread_manager::get_sleep_time() const
+double ThreadManager::get_sleep_time() const
 {
     return clock_.get_time(sas::Clock::TimeType::Idle);
 }
@@ -395,7 +395,7 @@ double thread_manager::get_sleep_time() const
  * @details Total elapsed time from one loop iteration to the next
  *          (computation_time + sleep_time).
  */
-double thread_manager::get_effective_sampling_time() const
+double ThreadManager::get_effective_sampling_time() const
 {
     return clock_.get_time(sas::Clock::TimeType::EffectiveSampling);
 }
@@ -404,7 +404,7 @@ double thread_manager::get_effective_sampling_time() const
  * @brief Get the total elapsed time since clock initialization.
  * @return Elapsed time in seconds.
  */
-double thread_manager::get_elapsed_time_sec() const
+double ThreadManager::get_elapsed_time_sec() const
 {
     return clock_.get_elapsed_time_sec();
 }
@@ -414,7 +414,7 @@ double thread_manager::get_elapsed_time_sec() const
  * @return Overrun count.
  * @details Incremented when the loop takes longer than the configured period.
  */
-long thread_manager::get_overrun_count() const
+long ThreadManager::get_overrun_count() const
 {
     return clock_.get_overrun_count();
 }
@@ -426,7 +426,7 @@ long thread_manager::get_overrun_count() const
  * @return The requested statistic value in seconds.
  * @throws std::runtime_error if statistics were not enabled at construction.
  */
-double thread_manager::get_statistics(const Statistics& statistics,
+double ThreadManager::get_statistics(const Statistics& statistics,
                                       const sas::Clock::TimeType& time_type) const
 {
     return clock_.get_statistics(statistics, time_type);
