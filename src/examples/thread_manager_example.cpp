@@ -30,7 +30,7 @@ int main() {
     int counter = 0;
 
     // Create and start thread
-    sas::thread_manager tm("test", 0.1, [&counter]() {
+    sas::ThreadManager tm("test", 0.1, [&counter]() {
         std::cout << ++counter << "\n";
     });
 
