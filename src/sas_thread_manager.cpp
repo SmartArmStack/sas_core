@@ -419,6 +419,41 @@ long ThreadManager::get_overrun_count() const
     return clock_.get_overrun_count();
 }
 
+
+/**
+ * @brief Get a const reference to the internal clock instance.
+ * @return Const reference to the sas::Clock object used for timing and statistics.
+ * @details Provides access to the clock that manages timing, performance monitoring,
+ *          and statistics collection for this thread. This is useful for:
+ *          - Reading detailed timing statistics
+ *          - Monitoring thread performance in real-time
+ *          - Accessing clock configuration and state
+ *
+ * @note Returns a const reference to prevent modification of the clock's internal state.
+ * @note The clock is updated in the thread's main loop via clock_.update_and_sleep().
+ *
+ * @see get_computation_time()
+ * @see get_sleep_time()
+ * @see get_effective_sampling_time()
+ * @see get_overrun_count()
+ * @see get_statistics()
+ *
+ * @code
+ * ThreadManager worker("Worker", 0.01, []() { do_work(); });
+ * worker.start();
+ *
+ * // Access clock information
+ * const auto& clock = worker.get_clock();
+ * double mean_computation = clock.get_statistics(Statistics::Mean,
+ *                                                 sas::Clock::TimeType::Computational);
+ * @endcode
+ */
+const sas::Clock& ThreadManager::get_clock() const
+{
+    return clock_;
+}
+
+
 /**
  * @brief Get statistical metrics for a specific time type.
  * @param statistics The statistic to retrieve (e.g., Mean, Max, Min, StdDev).
