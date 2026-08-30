@@ -36,16 +36,54 @@ namespace sas
 class ThreadManager
 {
 public:
-    // PRIORITY levels
+    /**
+     * @brief Abstract priority levels for thread_manager threads.
+     *
+     * These levels are mapped to concrete Linux scheduling policies and
+     * priority/nice values in apply_priority(). The enum values themselves
+     * (0, 10, 50, 80, 90, 99) are NOT passed directly to the OS in most cases —
+     * they exist purely to establish a monotonic ordering (LOWEST < ...
+     * CRITICAL) that is easy to read and compare in application code. The
+     * actual OS-level values used for each level are documented per-enumerator
+     * below, and are applied in sas_thread_manager.cpp.
+     *
+     * @details Linux scheduling background:
+     *          - SCHED_OTHER (the default, non-realtime policy) does not use
+     *            sched_priority (it must be 0); differentiation between
+     *            SCHED_OTHER threads is done via the nice value, range -20
+     *            (highest priority) to 19 (lowest), see setpriority(2).
+     *          - SCHED_FIFO and SCHED_RR (realtime policies) use
+     *            sched_priority directly, range 1 (low) to 99 (high) on
+     *            Linux, see sched(7). Using these policies requires root or
+     *            the CAP_SYS_NICE capability.
+     *
+     * @note The specific numeric choices below (nice 19/10/0, sched_priority
+     *       80/90/99) are this library's own convention, not values mandated
+     *       by POSIX or Linux. Only the *range* (nice: -20..19, real-time
+     *       sched_priority: 1..99) and the *meaning of SCHED_OTHER's priority
+     *       field being 0* are OS-defined. CRITICAL uses 99 specifically
+     *       because that is the maximum legal sched_priority for SCHED_FIFO/
+     *       SCHED_RR on Linux (sched_get_priority_max()), i.e. "as high as
+     *       the OS allows." HIGH (80) and REALTIME (90) are spaced below
+     *       that ceiling to preserve headroom and a clear ordering, not
+     *       because those exact numbers carry any special OS meaning.
+     *
+     * @warning Real-time priorities are Linux static priorities: within a
+     *          given policy, EQUAL priorities are round-robined (SCHED_RR)
+     *          or run strictly FIFO (SCHED_FIFO) — see sched(7). Two threads
+     *          both at REALTIME or CRITICAL can starve each other under
+     *          SCHED_FIFO if neither blocks or yields.
+     *
+     * @see apply_priority() for the concrete Linux policy/value mapping.
+     */
     enum class PRIORITY {
-        LOWEST = 0,
-        BACKGROUND = 10,
-        NORMAL = 50,
-        HIGH = 80,
-        REALTIME = 90,
-        CRITICAL = 99
+        LOWEST     = 0,  ///< SCHED_OTHER, nice 19 (least favorable, lowest priority)
+        BACKGROUND = 10, ///< SCHED_OTHER, nice 10
+        NORMAL     = 50, ///< SCHED_OTHER, nice 0 (default OS priority)
+        HIGH       = 80, ///< SCHED_RR, sched_priority 80 (requires root/CAP_SYS_NICE)
+        REALTIME   = 90, ///< SCHED_FIFO, sched_priority 90 (requires root/CAP_SYS_NICE)
+        CRITICAL   = 99  ///< SCHED_FIFO, sched_priority 99 — the OS-defined maximum
     };
-
 
 
 private:
