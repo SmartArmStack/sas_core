@@ -276,26 +276,32 @@ void ThreadManager::run()
  */
 void ThreadManager::apply_priority() {
 #ifdef __linux__
-    pthread_t thread_handle = thread_.native_handle();
+    pthread_t thread_handle = pthread_self();
+
     struct sched_param param = {0};
-    int policy;
+    int policy = SCHED_OTHER;
+    int nice_value = 0;
+    bool use_nice = false;
 
     // Map to Linux scheduling
     switch (priority_) {
     case PRIORITY::LOWEST:
         policy = SCHED_OTHER;
         param.sched_priority = 0;
-        setpriority(PRIO_PROCESS, pthread_self(), 19);
+        nice_value = 19;
+        use_nice = true;
         break;
     case PRIORITY::BACKGROUND:
         policy = SCHED_OTHER;
         param.sched_priority = 0;
-        setpriority(PRIO_PROCESS, pthread_self(), 10);
+        nice_value = 10;
+        use_nice = true;
         break;
     case PRIORITY::NORMAL:
         policy = SCHED_OTHER;
         param.sched_priority = 0;
-        setpriority(PRIO_PROCESS, pthread_self(), 0);
+        nice_value = 0;
+        use_nice = true;
         break;
     case PRIORITY::HIGH:
         policy = SCHED_RR;
@@ -311,9 +317,23 @@ void ThreadManager::apply_priority() {
         break;
     }
 
-    if (pthread_setschedparam(thread_handle, policy, &param) != 0) {
-        std::cerr << "Warning: Failed to set priority for thread '"
-                  << thread_name_ << "'" << std::endl;
+    // pthread_setschedparam() returns the error number directly on failure —
+    // it does NOT set errno. strerror() is called on the return value itself.
+    // Note: C++17 If-Initializer Syntax
+    if (int rc = pthread_setschedparam(thread_handle, policy, &param); rc != 0) {
+        std::cerr << "Warning: Failed to set scheduling policy/priority for thread '"
+                  << thread_name_ << "': " << std::strerror(rc) << std::endl;
+    }
+
+    // setpriority(), unlike pthread_setschedparam(), does follow the errno
+    // convention: it returns -1 and sets errno on failure.
+    // https://man7.org/linux/man-pages/man3/errno.3.html
+    if (use_nice) {
+        errno = 0;
+        if (setpriority(PRIO_PROCESS, 0, nice_value) != 0) {
+            std::cerr << "Warning: Failed to set nice value for thread '"
+                      << thread_name_ << "': " << std::strerror(errno) << std::endl;
+        }
     }
 #endif
 }
