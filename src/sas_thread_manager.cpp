@@ -225,6 +225,12 @@ void ThreadManager::run()
 /**
  * @brief Apply the configured priority and scheduling policy to the thread.
  *
+ * Sources: https://man7.org/linux/man-pages/man7/sched.7.html
+ *          https://man7.org/linux/man-pages/man2/setpriority.2.html
+ *          https://www.ibm.com/docs/en/zos/3.2.0?topic=functions-setpriority-set-process-scheduling-priority
+ *          The Linux Programming Interface by Michael Kerrisk (Chapter 35 PROCESS PRIORITIES AND SCHEDULING)
+ *
+ *
  * This method sets the thread's scheduling priority and policy based on the
  * PRIORITY enum value configured at construction time. It uses Linux's
  * pthread_setschedparam API to apply the settings.
