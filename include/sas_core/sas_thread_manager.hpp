@@ -33,7 +33,7 @@
 namespace sas
 {
 
-class thread_manager
+class ThreadManager
 {
 public:
     // PRIORITY levels
@@ -67,14 +67,14 @@ protected:
 protected:
     void run();
 public:
-    ~thread_manager();
+    ~ThreadManager();
 
-    thread_manager(const thread_manager&) = delete;            // Copy constructor
-    thread_manager& operator=(const thread_manager&) = delete; // Copy assignment
-    thread_manager(thread_manager&&) = delete;                 // Move constructor
-    thread_manager& operator=(thread_manager&&) = delete;      // Move assignment
+    ThreadManager(const ThreadManager&) = delete;            // Copy constructor
+    ThreadManager& operator=(const ThreadManager&) = delete; // Copy assignment
+    ThreadManager(ThreadManager&&) = delete;                 // Move constructor
+    ThreadManager& operator=(ThreadManager&&) = delete;      // Move assignment
 
-    thread_manager(const std::string& thread_name,
+    ThreadManager(const std::string& thread_name,
                    const double& period,
                    std::function<void()> callback,
                    PRIORITY priority = PRIORITY::NORMAL,
