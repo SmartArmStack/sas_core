@@ -235,6 +235,7 @@ void ThreadManager::run()
     // Set thread name (if supported by platform)
 #ifdef __linux__
     // pthread_setname_np has a 16 character limit (including null terminator)
+    // see https://man7.org/linux/man-pages/man3/pthread_setname_np.3.html
     std::string truncated_name = thread_name_;
     if (truncated_name.length() > 15) {
         truncated_name.resize(15);
