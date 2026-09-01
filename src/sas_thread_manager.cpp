@@ -161,16 +161,12 @@ void ThreadManager::start()
     // Lock enabled
     std::scoped_lock lock(mutex_);
 
-    // exchange is atomic, but we do it while holding the mutex
-    // to ensure consistency
-    if (running_.exchange(true)) { // Atomically set running_ to true and get the previous value.
-        return; // Already running - don't start another thread
+    if (!running_.exchange(true))
+    {
+        stop_requested_ = false;
+        clock_.init();
+        thread_ = std::thread(&ThreadManager::run, this);
     }
-
-    // Protected by mutex
-    stop_requested_ = false;
-    clock_.init();
-    thread_ = std::thread(&ThreadManager::run, this);
     // Lock released automatically when scoped_lock goes out of scope
 }
 
@@ -181,22 +177,22 @@ void ThreadManager::stop()
 {
     std::scoped_lock lock(mutex_);
 
-    if (!running_.exchange(false)) {
-        return; // Not running
-    }
+    if (running_.load())
+    {
+        //This is semantically equivalent to stop_requested_ = true
+        //Just to emphasize that it is an atomic variable.
+        stop_requested_.store(true);
 
-    //This is semantically equivalent to stop_requested_ = true
-    //Just to emphasize that it is an atomic variable.
-    stop_requested_.store(true);
-
-    if (thread_.joinable()) {
-        if (std::this_thread::get_id() == thread_.get_id()) {
-            std::cerr << "Fatal: ThreadManager::stop() called from its own "
-                         "callback thread ('" << thread_name_
-                      << "'); this would deadlock. Terminating." << std::endl;
-            std::terminate();
+        if (thread_.joinable()) {
+            if (std::this_thread::get_id() == thread_.get_id()) {
+                std::cerr << "Fatal: ThreadManager::stop() called from its own "
+                             "callback thread ('" << thread_name_
+                          << "'); this would deadlock. Terminating." << std::endl;
+                std::terminate();
+            }
+            thread_.join();
         }
-        thread_.join();
+        running_.store(false);
     }
 }
 
