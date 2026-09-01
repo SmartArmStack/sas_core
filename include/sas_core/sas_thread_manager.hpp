@@ -29,6 +29,7 @@
 #include <thread>
 #include <atomic>
 #include <string>
+#include <mutex>
 
 namespace sas
 {
@@ -92,6 +93,7 @@ private:
     int cpu_core_{-1};
     void apply_priority();
     void apply_cpu_affinity();
+    mutable std::mutex mutex_;
 
 
 protected:

@@ -26,6 +26,7 @@
 #include <sas_core/sas_thread_manager.hpp>
 #include <stdexcept>
 #include <cstring>
+#include <cassert>
 
 #ifdef __linux__
 #include <pthread.h>
@@ -65,6 +66,20 @@ namespace sas
  *
  * @note Real-time priorities (HIGH, REALTIME, CRITICAL) require root
  *       privileges or CAP_SYS_NICE capability.
+ *
+ * @warning The callback must NEVER call start() or stop() on this same
+ *          ThreadManager instance, whether directly or indirectly (e.g.
+ *          through a nested function call). start() and stop() run under
+ *          an internal mutex that is held while the loop thread is joined;
+ *          calling either from within the callback (which runs on that
+ *          same loop thread) will deadlock, since the thread would be
+ *          waiting to acquire a mutex held by the very call that is
+ *          waiting for the thread to finish. A stop() call from the
+ *          callback would additionally attempt to join the thread from
+ *          within itself, which is undefined behavior regardless of the
+ *          mutex. If the callback needs to end the loop, it should signal
+ *          that externally (e.g. via a flag it exposes) and let a
+ *          different thread call stop().
  *
  * @see PRIORITY
  * @see start()
@@ -143,16 +158,20 @@ ThreadManager::~ThreadManager()
  */
 void ThreadManager::start()
 {
-    // Atomically set running_ to true and get the previous value.
-    if (running_.exchange(true)) {
+    // Lock enabled
+    std::scoped_lock lock(mutex_);
+
+    // exchange is atomic, but we do it while holding the mutex
+    // to ensure consistency
+    if (running_.exchange(true)) { // Atomically set running_ to true and get the previous value.
         return; // Already running - don't start another thread
     }
 
-    // If we get here, running_ was false before. We can safely start the thread.
-
+    // Protected by mutex
     stop_requested_ = false;
     clock_.init();
     thread_ = std::thread(&ThreadManager::run, this);
+    // Lock released automatically when scoped_lock goes out of scope
 }
 
 /**
@@ -160,12 +179,23 @@ void ThreadManager::start()
  */
 void ThreadManager::stop()
 {
+    std::scoped_lock lock(mutex_);
+
     if (!running_.exchange(false)) {
         return; // Not running
     }
 
-    stop_requested_ = true;
+    //This is semantically equivalent to stop_requested_ = true
+    //Just to emphasize that it is an atomic variable.
+    stop_requested_.store(true);
+
     if (thread_.joinable()) {
+        if (std::this_thread::get_id() == thread_.get_id()) {
+            std::cerr << "Fatal: ThreadManager::stop() called from its own "
+                         "callback thread ('" << thread_name_
+                      << "'); this would deadlock. Terminating." << std::endl;
+            std::terminate();
+        }
         thread_.join();
     }
 }
