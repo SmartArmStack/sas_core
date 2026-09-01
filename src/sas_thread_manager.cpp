@@ -423,59 +423,6 @@ void ThreadManager::apply_cpu_affinity() {
 }
 
 
-
-/**
- * @brief Get the computation time of the most recent loop iteration.
- * @return Computation time in seconds.
- * @details Measures the time spent executing the callback function
- *          (between sleep end and next sleep start).
- */
-double ThreadManager::get_computation_time() const
-{
-    return clock_.get_time(sas::Clock::TimeType::Computational);
-}
-
-/**
- * @brief Get the sleep/idle time of the most recent loop iteration.
- * @return Sleep time in seconds.
- * @details Measures the time spent sleeping between callback executions.
- */
-double ThreadManager::get_sleep_time() const
-{
-    return clock_.get_time(sas::Clock::TimeType::Idle);
-}
-
-/**
- * @brief Get the effective sampling time of the most recent loop iteration.
- * @return Effective sampling time in seconds.
- * @details Total elapsed time from one loop iteration to the next
- *          (computation_time + sleep_time).
- */
-double ThreadManager::get_effective_sampling_time() const
-{
-    return clock_.get_time(sas::Clock::TimeType::EffectiveSampling);
-}
-
-/**
- * @brief Get the total elapsed time since clock initialization.
- * @return Elapsed time in seconds.
- */
-double ThreadManager::get_elapsed_time_sec() const
-{
-    return clock_.get_elapsed_time_sec();
-}
-
-/**
- * @brief Get the number of times the loop has overrun its target period.
- * @return Overrun count.
- * @details Incremented when the loop takes longer than the configured period.
- */
-long ThreadManager::get_overrun_count() const
-{
-    return clock_.get_overrun_count();
-}
-
-
 /**
  * @brief Get a const reference to the internal clock instance.
  * @return Const reference to the sas::Clock object used for timing and statistics.

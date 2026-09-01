@@ -121,13 +121,6 @@ public:
                    int cpu_core = -1);
 
 
-
-    // Performance monitoring using sas::Clock
-    double get_computation_time() const;
-    double get_sleep_time() const;
-    double get_effective_sampling_time() const;
-    double get_elapsed_time_sec() const;
-    long   get_overrun_count() const;
     const sas::Clock& get_clock() const;
 
     // Statistics from sas::Clock
