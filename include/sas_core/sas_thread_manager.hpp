@@ -123,10 +123,6 @@ public:
 
     const sas::Clock& get_clock() const;
 
-    // Statistics from sas::Clock
-    double get_statistics(const Statistics& statistics,
-                          const sas::Clock::TimeType& time_type) const;
-
     // Lifecycle
     void start();
     void stop();

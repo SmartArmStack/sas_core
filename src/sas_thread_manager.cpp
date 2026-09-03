@@ -454,19 +454,5 @@ const sas::Clock& ThreadManager::get_clock() const
 }
 
 
-/**
- * @brief Get statistical metrics for a specific time type.
- * @param statistics The statistic to retrieve (e.g., Mean, Max, Min, StdDev).
- * @param time_type The time type to analyze (Computational, Idle, EffectiveSampling).
- * @return The requested statistic value in seconds.
- * @throws std::runtime_error if statistics were not enabled at construction.
- */
-double ThreadManager::get_statistics(const Statistics& statistics,
-                                      const sas::Clock::TimeType& time_type) const
-{
-    return clock_.get_statistics(statistics, time_type);
-}
-
-
 
 }
