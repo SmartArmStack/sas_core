@@ -1,61 +1,64 @@
-cmake_minimum_required(VERSION 3.11)
+cmake_minimum_required(VERSION 3.16)
 project(sas_core)
 
-option(ROS2_BUILD "Enable ROS2/ament build (examples + ament integration)" ON)
+# =============================================================================
+# sas_core is a THIN WRAPPER around the SmartArmStack core:
+#
+#   - C++ library: libmarinholab_sas_core, provided by the
+#     libmarinholab-sas-core .deb (source: https://github.com/MarinhoLab/sas_cpp).
+#     The .deb installs headers under include/marinholab/sas/core/, the shared
+#     library, and the CMake package config (find_package(marinholab_sas_core)).
+#   - Python bindings: the PyPI package marinholab-sas-core
+#     (https://github.com/MarinhoLab/sas_py), imported as marinholab.sas.core.
+#
+# This package adds no implementation; it only:
+#   1. re-exports the ament target `sas_core` so downstream ROS packages keep
+#      working with `ament_target_dependencies(<pkg> sas_core ...)`;
+#   2. installs compatibility headers include/sas_core/*.hpp that forward to
+#      the .deb's include/marinholab/sas/core/*.hpp and re-alias `namespace sas`;
+#   3. installs the pure-Python `sas_core` shim (re-exporting
+#      marinholab.sas.core) so `from sas_core import Clock` keeps working.
+# =============================================================================
 
-if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    add_compile_options(-Wall -Wextra -Wpedantic)
-endif()
+find_package(marinholab_sas_core REQUIRED)
+find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 
-# ---- Core libraries (always built) ----
-include(cmake/cpplib.cmake)
+# Eigen3 is a PUBLIC dependency of the core (its headers include <Eigen/Dense>);
+# declare it so downstream ament packages can resolve it through this package.
+find_package(Eigen3 REQUIRED)
 
-if(ROS2_BUILD)
-    find_package(ament_cmake REQUIRED)
-    ament_python_install_package(${PROJECT_NAME})
-    set(_SAS_PYTHON_INSTALL_DIR "${PYTHON_INSTALL_DIR}/${PROJECT_NAME}")
-endif()
+# ---- ament target ---------------------------------------------------------
+# INTERFACE alias forwarding downstream packages to the core target installed
+# by the libmarinholab-sas-core .deb.
+add_library(sas_core INTERFACE)
+target_link_libraries(sas_core INTERFACE marinholab::sas::core Eigen3::Eigen)
 
-include(cmake/pythonlib.cmake)
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+# Eigen3 and marinholab_sas_core are consumed transitively by downstream
+# packages that link the `sas_core` target; propagate them so their
+# find_package() calls run in the consumer.
+ament_export_dependencies(Eigen3 marinholab_sas_core)
 
-# ---- ROS2 / ament integration (conditional) ----
-if(ROS2_BUILD)
-    # INTERFACE alias for downstream ROS packages
-    add_library(sas_core INTERFACE)
-    target_link_libraries(sas_core INTERFACE sas_core_pure)
+# ---- Compatibility headers ------------------------------------------------
+# include/sas_core/*.hpp are thin shims forwarding to the .deb's
+# include/marinholab/sas/core/*.hpp and re-aliasing `namespace sas`.
+install(DIRECTORY include/ DESTINATION include)
 
-    ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-    ament_export_dependencies(Eigen3)
+install(TARGETS sas_core
+    EXPORT export_${PROJECT_NAME}
+)
 
-    install(DIRECTORY include/ DESTINATION include)
+# ---- Python compatibility shim ---------------------------------------------
+# Pure-Python module re-exporting marinholab.sas.core (installed from PyPI by
+# the docker environment / user). See sas_core/__init__.py.
+ament_python_install_package(${PROJECT_NAME})
 
-    install(TARGETS sas_core sas_core_pure
-        EXPORT export_${PROJECT_NAME}
-        ARCHIVE DESTINATION lib
-        INCLUDES DESTINATION include
-    )
+# Example scripts (run against the PyPI-installed bindings).
+install(
+    DIRECTORY scripts/
+    FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
+    DESTINATION lib/${PROJECT_NAME}
+)
 
-    # Example executables
-    foreach(_name IN ITEMS sas_core_example sas_clock_example
-        sas_clock_sched_fifo_example)
-        add_executable(${_name} src/examples/${_name}.cpp)
-        target_link_libraries(${_name} sas_core_pure)
-        if(_name STREQUAL "sas_core_example")
-            target_link_libraries(${_name} -ldqrobotics)
-        endif()
-        install(TARGETS ${_name} DESTINATION lib/${PROJECT_NAME})
-    endforeach()
-
-    add_executable(sas_robot_driver_example
-        src/examples/sas_robot_driver_example_main.cpp)
-    target_link_libraries(sas_robot_driver_example sas_core_pure)
-    install(TARGETS sas_robot_driver_example DESTINATION lib/${PROJECT_NAME})
-
-    install(DIRECTORY
-        scripts/
-        FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ
-        DESTINATION lib/${PROJECT_NAME}
-    )
-
-    ament_package()
-endif()
+ament_package()

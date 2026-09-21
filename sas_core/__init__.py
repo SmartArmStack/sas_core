@@ -1,20 +1,24 @@
 """
 @file __init__.py
-@brief Package entry for the sas_core Python bindings.
+@brief Package entry for the sas_core Python bindings (compatibility shim).
 
-This module re-exports the primary Python bindings provided by the
-compiled extension module :mod:`sas_core._sas_core`.
+The Python bindings now live in the PyPI package ``marinholab-sas-core``
+(https://github.com/MarinhoLab/sas_py), imported as ``marinholab.sas.core``.
+This module re-exports its public names so existing code keeps working:
 
-- Clock: high-resolution timing and sleep class.
-- Statistics: enumeration for statistical types.
-- RobotDriver: abstract robot driver interface that can be inherited by Python classes.
-- ShutdownSignaler: request and wait for orderly shutdown.
+    from sas_core import Clock, Statistics, RobotDriver, ShutdownSignaler
 
-The concrete implementations live in the compiled extension module
-``sas_core._sas_core``.
+``sas_core`` no longer ships its own compiled extension module; it is a thin
+wrapper around the PyPI package. Install the bindings with:
 
+    pip install marinholab-sas-core
 """
 
-from sas_core._sas_core import Clock, Statistics, RobotDriver, ShutdownSignaler
+from marinholab.sas.core import (
+    Clock,
+    Statistics,
+    RobotDriver,
+    ShutdownSignaler,
+)
 
 __all__ = ["Clock", "Statistics", "RobotDriver", "ShutdownSignaler"]
