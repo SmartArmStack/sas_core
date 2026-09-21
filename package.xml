@@ -3,11 +3,26 @@
 <package format="3">
   <name>sas_core</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>
+    Thin ROS 2 wrapper around the SmartArmStack core. The C++ library
+    (libmarinholab_sas_core) is provided by the libmarinholab-sas-core .deb
+    (source: https://github.com/MarinhoLab/sas_cpp); the Python bindings are
+    provided by the PyPI package marinholab-sas-core
+    (https://github.com/MarinhoLab/sas_py). This package re-exports the ament
+    target `sas_core`, installs compatibility headers (namespace sas) and a
+    pure-Python `sas_core` shim so existing downstream packages keep working.
+  </description>
   <maintainer email="murilomarinho@ieee.org">murilo</maintainer>
-  <license>TODO: License declaration</license>
+  <license>LGPL-3.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <!-- C++ core (libmarinholab_sas_core + headers + CMake package config) is
+       provided by the libmarinholab-sas-core .deb and checked by
+       find_package(marinholab_sas_core REQUIRED) in CMakeLists.txt. It is a
+       plain CMake package (no package.xml), so it is intentionally not
+       declared here: colcon cannot resolve non-ament dependencies. -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
