@@ -32,6 +32,13 @@ find_package(Eigen3 REQUIRED)
 # INTERFACE alias forwarding downstream packages to the core target installed
 # by the libmarinholab-sas-core .deb.
 add_library(sas_core INTERFACE)
+# Expose the compatibility headers (include/sas_core/*.hpp) through the
+# target's interface so downstream packages that link sas_core::sas_core
+# can #include <sas_core/...> in both workspace and installed use.
+target_include_directories(sas_core INTERFACE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
 target_link_libraries(sas_core INTERFACE marinholab::sas::core Eigen3::Eigen)
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
