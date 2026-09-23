@@ -8,6 +8,11 @@
 #         libmarinholab_sas_core (legacy include path + namespace sas)
 #   [4/4] C++ namespace-ambiguity regression test (downstream-style consumer
 #         with `using namespace rclcpp;` + bare `Clock` in `namespace sas`)
+#
+# Note on CI gating: the `run` step uses `docker compose up`, which does not
+# propagate the container's exit code. The checks here are therefore
+# informational in CI today; run this script manually (or via
+# `docker compose run --rm sas_core`) to get a real pass/fail signal.
 set -e
 
 cd /root/sas_core_devel/src/
@@ -52,8 +57,23 @@ echo '=== [4/4] C++ namespace-ambiguity regression test (downstream-style) ==='
 # shim, `Clock` was ambiguous between rclcpp::Clock and
 # marinholab::sas::core::Clock. The `using Clock = ...` declaration in the
 # shim makes it a real member of `namespace sas`, shadowing rclcpp::Clock.
-# Compile-only: linking the full rclcpp runtime here is not required for
-# the name-lookup check.
+#
+# A minimal `rclcpp` stub (Clock + Node) is used instead of the full rclcpp
+# runtime: the bug is purely about *name lookup*, and a stub rclcpp::Clock /
+# rclcpp::Node is name-lookup-identical to the real ones. This keeps the test
+# hermetic and independent of the ROS include layout.
+STUB=/tmp/sas_ambig_stub/rclcpp
+mkdir -p "${STUB}"
+cat > "${STUB}/rclcpp.hpp" <<'CPP'
+#pragma once
+#include <memory>
+namespace rclcpp
+{
+    class Clock {};
+    class Node  { public: std::shared_ptr<Clock> get_clock() { return nullptr; } };
+}
+CPP
+
 cat > /tmp/sas_core_ambig_test.cpp <<'CPP'
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
@@ -84,7 +104,7 @@ int main()
 CPP
 
 g++ /tmp/sas_core_ambig_test.cpp -c -o /tmp/sas_core_ambig_test.o \
-    -I"${SAS_INC}"
+    -I"${STUB%/*}" -I"${SAS_INC}"
 echo 'Ambiguity regression test compiled (no ambiguous Clock).'
 
 echo '=== ALL CHECKS PASSED ==='
