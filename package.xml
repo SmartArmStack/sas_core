@@ -24,6 +24,13 @@
        plain CMake package (no package.xml), so it is intentionally not
        declared here: colcon cannot resolve non-ament dependencies. -->
 
+  <!-- Eigen3 is a PUBLIC dependency: find_package(Eigen3 REQUIRED) in
+       CMakeLists.txt and ament_export_dependencies(Eigen3 ...). -->
+  <depend>eigen</depend>
+
+  <!-- Used by the installed example scripts. -->
+  <exec_depend>python3-numpy</exec_depend>
+
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
