@@ -32,7 +32,9 @@ It is intended for documentation and testing purposes only.
 """
 
 import numpy as np
+
 from sas_core import RobotDriver, ShutdownSignaler
+
 
 class ExampleRobotDriver(RobotDriver):
     """

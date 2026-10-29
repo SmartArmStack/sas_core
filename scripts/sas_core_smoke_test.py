@@ -37,8 +37,8 @@ import tempfile
 
 
 def check_python_bindings():
-    from sas_core import Clock, Statistics, RobotDriver, ShutdownSignaler
     import marinholab.sas.core as real
+    from sas_core import Clock, RobotDriver, ShutdownSignaler, Statistics
 
     # The shim must expose the exact same classes as the PyPI package.
     assert Clock is real.Clock, "Clock shim mismatch"

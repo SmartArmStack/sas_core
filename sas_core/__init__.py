@@ -16,9 +16,9 @@ wrapper around the PyPI package. Install the bindings with:
 
 from marinholab.sas.core import (
     Clock,
-    Statistics,
     RobotDriver,
     ShutdownSignaler,
+    Statistics,
 )
 
 __all__ = ["Clock", "Statistics", "RobotDriver", "ShutdownSignaler"]

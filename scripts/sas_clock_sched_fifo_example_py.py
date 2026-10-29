@@ -30,6 +30,7 @@ SCHED_FIFO (root or CAP_SYS_NICE); the script catches PermissionError.
 """
 
 import os
+
 from sas_core import Clock, Statistics
 
 if __name__=='__main__':

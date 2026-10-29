@@ -41,17 +41,13 @@ if __name__=='__main__':
     for i in range(0,50):
         # Starting the loop with an update reduces issues with the first loop taking too long
         clock.update_and_sleep()
-        print("Loop n = {}".format(i))
-        print("  Elapsed time: {}".format(clock.get_elapsed_time_sec()))
-        print("  Latest computation time: {}".format(clock.get_time(Clock.TimeType.Computational)))
-        print("  Latest idle time: {}".format(clock.get_time(Clock.TimeType.Idle)))
-        print("  Latest effective thread sampling time: {}".format(
-            clock.get_time(clock.TimeType.EffectiveSampling)
-        ))
-        print("  Desired thread sampling time: {}".format(
-            clock.get_desired_thread_sampling_time_sec()
-        ))
-        print("  Overrun count: ".format(clock.get_overrun_count()))
+        print(f"Loop n = {i}")
+        print(f"  Elapsed time: {clock.get_elapsed_time_sec()}")
+        print(f"  Latest computation time: {clock.get_time(Clock.TimeType.Computational)}")
+        print(f"  Latest idle time: {clock.get_time(Clock.TimeType.Idle)}")
+        print(f"  Latest effective thread sampling time: {clock.get_time(clock.TimeType.EffectiveSampling)}")
+        print(f"  Desired thread sampling time: {clock.get_desired_thread_sampling_time_sec()}")
+        print("  Overrun count: ")
 
     # Statistics
     print("Statistics for the entire loop")
