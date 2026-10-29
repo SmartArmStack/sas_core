@@ -54,7 +54,7 @@ class ExampleRobotDriver(RobotDriver):
         """
         RobotDriver.__init__(self, ss)
         print("ExampleRobotDriver::__init__")
-        self.joint_positions = None
+        self.joint_positions = np.array([])
 
     def connect(self):
         """
@@ -84,20 +84,20 @@ class ExampleRobotDriver(RobotDriver):
         """
         print("ExampleRobotDriver::deinitialize")
 
-    def get_joint_positions(self):
+    def get_joint_positions(self) -> np.ndarray:
         """
         @brief Get the current joint positions.
-        @return numpy.ndarray or None Current joint positions in radians, or None if unknown.
+        @return numpy.ndarray Current joint positions in radians.
         """
         return self.joint_positions
 
-    def set_target_joint_positions(self, target_joint_positions_rad):
+    def set_target_joint_positions(self, target: np.ndarray) -> None:
         """
         @brief Set the desired joint positions (target).
-        @param target_joint_positions_rad numpy.ndarray Target joint positions in radians.
+        @param target numpy.ndarray Target joint positions in radians.
         @return None
         """
-        self.joint_positions = target_joint_positions_rad
+        self.joint_positions = target
 
 def main():
     """Example main demonstrating `ExampleRobotDriver`.
