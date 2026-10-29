@@ -47,7 +47,7 @@ if __name__=='__main__':
     # Always initialize before the loop to reduce latency
     clock.init()
 
-    for i in range(0,50):
+    for _ in range(0, 50):
         clock.update_and_sleep()
         # Starting the loop with an update reduces issues with the first loop taking too long
 
